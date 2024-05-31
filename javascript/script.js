@@ -246,7 +246,7 @@ function salvarClientes(clientes) {
             const tabela = document.getElementById('corpoTabela');
             tabela.innerHTML = ''; // Limpa a tabela antes de adicionar os clientes ordenados
 
-            // Adicionar clientes na ordem correta
+            // Adicionar clientes na ordem corretta
             clientesOrdenados.doisDias.forEach(cliente => {
                 adicionarLinhaTabela(cliente.nome, cliente.telefone, new Date(cliente.data));
             });
@@ -267,21 +267,30 @@ function salvarClientes(clientes) {
         }
 
         function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
+    const body = document.body;
+    body.classList.toggle('dark-mode');
 
-            const isDarkMode = body.classList.contains('dark-mode');
-            localStorage.setItem('dark-mode', isDarkMode);
-        }
+    const footer = document.querySelector('footer');
+    footer.classList.toggle('footer-light'); // Alterna a classe para o footer
 
-        function carregarDarkMode() {
-            const isDarkMode = localStorage.getItem('dark-mode') === 'true';
-            if (isDarkMode) {
-                document.body.classList.add('dark-mode');
-            }
-        }
+    const isDarkMode = body.classList.contains('dark-mode');
+    localStorage.setItem('dark-mode', isDarkMode);
+}
 
-        window.onload = function() {
-            carregarPagina();
-            carregarDarkMode();
-        };
+function carregarDarkMode() {
+    const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+    const body = document.body;
+    const footer = document.querySelector('footer');
+    
+    if (isDarkMode) {
+        body.classList.add('dark-mode');
+        footer.classList.remove('footer-light'); // Garante que a classe correta seja aplicada
+    } else {
+        footer.classList.add('footer-light'); // Garante que a classe correta seja aplicada
+    }
+}
+
+window.onload = function() {
+    carregarPagina();
+    carregarDarkMode();
+};
