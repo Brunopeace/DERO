@@ -1,4 +1,66 @@
 /* Estilos CSS */
+         
+.clientes-vencidos {
+        color: red;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px;
+        background-color: #ffe6e6;
+        border: 2px solid red;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        margin-bottom: 5px;
+        padding-left: 110px;
+    }
+
+    .clientes-ativos {
+        color: green;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px;
+        background-color: #e6ffe6;
+        border: 2px solid green;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        margin-bottom: 5px;
+        padding-left: 110px;
+    }
+      
+
+.flex-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px; /* Ajuste conforme necessário */
+}
+
+.drop {
+
+    margin: 10px;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    /* background: #ccc; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.0em;
+    text-shadow: -2px -2px 5px #fff;
+    filter: drop-shadow(4px 4px 10px #fff);
+    box-shadow: inset 10px 10px 10px rgba(0,0,0,0.05),
+                15px 25px 10px rgba(0,0,0,0.05),
+                15px 20px 20px rgba(0,0,0,0.05),
+                inset -10px -10px 15px rgba(255,255,255,0.9);
+}
+
+
+
+
+/* estilos CSS... */
+      
         footer {
         text-align: center; /* Centraliza o texto no footer */
         padding: 1px 0; /* Espaçamento interno maior para mais destaque */
@@ -76,6 +138,31 @@
         
         /* Estilos CSS */
         
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 20px;
+        }
+        
+        .negado {
+            text-aline: center;
+            
+        }
+        
+        .corpo {
+            backgrouns-color: #000000;
+        }
+        
+        .logo {
+            display: block;
+            /* Centraliza e adiciona margem inferior */
+            margin: 0 auto 10px; 
+            /* Limita a largura da logomarca */
+            max-width: 300px; 
+        }
+        
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -130,16 +217,24 @@
             color: white;
         }
         .input-container {
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .input-container input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-color: #01e02d;
-            border-radius: 5px;
-        }
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .input-container input, .input-container label {
+        display: block;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .input-container input {
+        margin-top: 5px;
+        border-color: #01e02d;
+    }
         
         button {
             background-color: #4CAF50;
@@ -153,7 +248,8 @@
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #faff38;
+            color: #00b921;
             transform: scale(1.1);
         }
         .table-container {
@@ -171,21 +267,23 @@
             color: #2fa804;
         }
         body.dark-mode th {
-            background-color: #333;
-            color: #e0e0e0;
+            background-color: #e0ffe4;
+            color: #000000;
         }
         body.dark-mode tr:nth-child(even) {
-            background-color: #2c2c2c;
+            background-color: #737373;
         }
         body.dark-mode tr:hover {
-            background-color: #444;
+            background-color: #00992a;
+            color: black;
         }
         body.dark-mode button {
             background-color: #2fa804;
             color: #ffffff;
         }
         body.dark-mode button:hover {
-            background-color: #2fa804;
+            background-color: #000000;
+            color: #00f56c;
         }
         
         /* Estilos para dispositivos com largura de tela até 414px (Galaxy S23) */
