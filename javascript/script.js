@@ -1,4 +1,27 @@
-function salvarClientes(clientes) {
+function verificarAcesso() {
+            const uuidEsperado = 'fc30c781-e382-406b-b65a-4e850382e014';
+            let uuidArmazenado = localStorage.getItem('uuid');
+
+            if (!uuidArmazenado) {
+                uuidArmazenado = gerarUUID();
+                localStorage.setItem('uuid', uuidArmazenado);
+            }
+
+            if (uuidArmazenado !== uuidEsperado) {
+                alert("Acesso Negado. Você não tem permissão para acessar esta página.");
+                window.location.href = "acessonegado.html";
+            }
+        }
+
+        function gerarUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+
+        function salvarClientes(clientes) {
             localStorage.setItem('clientes', JSON.stringify(clientes));
         }
 
@@ -174,38 +197,41 @@ function salvarClientes(clientes) {
         }
 
         function atualizarInfoClientes() {
-            const totalVencidos = calcularTotalClientesVencidos();
-            const totalNaoVencidos = calcularTotalClientesNaoVencidos();
-            document.getElementById('infoClientes').innerText = `Clientes vencidos: ${totalVencidos}\nClientes ativos: ${totalNaoVencidos}`;
-        }
+    const totalVencidos = calcularTotalClientesVencidos();
+    const totalNaoVencidos = calcularTotalClientesNaoVencidos();
+    document.getElementById('infoClientes').innerHTML = `
+        <span class="clientes-vencidos">Clientes vencidos: ${totalVencidos}</span><br>
+        <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
+    `;
+}
 
-        function calcularTotalClientesVencidos() {
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const clientes = carregarClientes();
-            let totalVencidos = 0;
-            clientes.forEach(function(cliente) {
-                const dataVencimento = new Date(cliente.data);
-                if (dataVencimento < hoje) {
-                    totalVencidos++;
-                }
-            });
-            return totalVencidos;
+function calcularTotalClientesVencidos() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const clientes = carregarClientes();
+    let totalVencidos = 0;
+    clientes.forEach(function(cliente) {
+        const dataVencimento = new Date(cliente.data);
+        if (dataVencimento < hoje) {
+            totalVencidos++;
         }
+    });
+    return totalVencidos;
+}
 
-        function calcularTotalClientesNaoVencidos() {
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const clientes = carregarClientes();
-            let totalNaoVencidos = 0;
-            clientes.forEach(function(cliente) {
-                const dataVencimento = new Date(cliente.data);
-                if (dataVencimento >= hoje) {
-                    totalNaoVencidos++;
-                }
-            });
-            return totalNaoVencidos;
+function calcularTotalClientesNaoVencidos() {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const clientes = carregarClientes();
+    let totalNaoVencidos = 0;
+    clientes.forEach(function(cliente) {
+        const dataVencimento = new Date(cliente.data);
+        if (dataVencimento >= hoje) {
+            totalNaoVencidos++;
         }
+    });
+    return totalNaoVencidos;
+}
 
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
@@ -293,4 +319,5 @@ function carregarDarkMode() {
 window.onload = function() {
     carregarPagina();
     carregarDarkMode();
+    verificarAcesso();
 };
