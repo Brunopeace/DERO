@@ -36,7 +36,7 @@
         }
 
         function calcularDataVencimento(data) {
-            const dia = data.getDate();
+            const dia = data.getDate() + 1;
             let mes = data.getMonth() + 1; // Próximo mês
             let ano = data.getFullYear();
 
