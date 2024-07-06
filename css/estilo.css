@@ -1,4 +1,63 @@
-/* Estilos CSS */
+.loading-coracao {
+  display:block;
+  position: relative;
+  width: 30px;
+  height: 30px;
+  margin:auto;
+  transform: rotate(45deg);
+  transform-origin: 40px 40px;
+  padding-left: 45px;
+  padding-bottom: 45px;
+}
+
+
+.loading-coracao span {
+  top: 32px;
+  left: 32px;
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: #fd0000;
+  animation: loading-coracao 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+.loading-coracao span:after,
+.loading-coracao span:before {
+  content: " ";
+  position: absolute;
+  display: block;
+  width: 32px;
+  height: 32px;
+  background: #fd0000;
+}
+.loading-coracao span:before {
+  left: -24px;
+  border-radius: 50% 0 0 50%;
+}
+.loading-coracao span:after {
+  top: -24px;
+  border-radius: 50% 50% 0 0;
+}
+@keyframes loading-coracao {
+  0% {
+    transform: scale(0.95);
+  }
+  5% {
+    transform: scale(1.1);
+  }
+  39% {
+    transform: scale(0.85);
+  }
+  45% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(0.9);
+  }
+}
+    
          
 .clientes-vencidos {
         color: red;
@@ -57,9 +116,6 @@
 }
 
 
-
-
-/* estilos CSS... */
       
         footer {
         text-align: center; /* Centraliza o texto no footer */
@@ -136,7 +192,24 @@
             }
         }
         
-        /* Estilos CSS */
+        
+        
+        @keyframes desintegrate {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+}
+
+.desintegrate {
+    animation: desintegrate 0.6s forwards;
+}
+        
+        
         
         
         body {
@@ -195,14 +268,14 @@
             text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #d6ffe8;
             color: #333;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: #a3ffcc;
         }
         .orange {
             background-color: orange;
@@ -235,10 +308,41 @@
         margin-top: 5px;
         border-color: #01e02d;
     }
-        
+    
+    .button {
+        background-color: #00BFFF;
+        color: #ffffff;
+    }
+    
+    
+    #btnExcluirSelecionados {
+    background-color: #FF0000;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+    #btnExcluirSelecionados:hover {
+    background-color: #000000;
+    color: #FF0000;
+   
+}
+#backup {
+       background-color: #1E90FF;
+       color: #ffffff;
+    
+}
+
+#backup:hover {
+       background-color: #000000;
+       color: #1E90FF;
+    
+}
+
+   
+   
         button {
             background-color: #4CAF50;
-            color: white;
+            color: #ffffff;
             border-color:#ffffff;
             padding: 10px 20px;
             margin: 5px;
@@ -247,6 +351,9 @@
             border-radius: 10px;
             transition: background-color 0.3s;
         }
+        
+        
+        
         button:hover {
             background-color: #faff38;
             color: #00b921;
@@ -257,7 +364,7 @@
             max-width: 100%;
         }
 
-        /* Estilos para o modo escuro */
+                         /* Estilos para o modo escuro */
         
         body.dark-mode {
             background-color: #000000;
