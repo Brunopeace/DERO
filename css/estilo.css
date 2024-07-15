@@ -1,62 +1,47 @@
-.loading-coracao {
-  display:block;
-  position: relative;
-  width: 30px;
-  height: 30px;
-  margin:auto;
-  transform: rotate(45deg);
-  transform-origin: 40px 40px;
-  padding-left: 45px;
-  padding-bottom: 45px;
+#backToTop {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(45deg, #00FF00, #228B22); 
+    color: white;
+    border: 1px solid #ffffff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+#backToTop::after {
+    content: '';
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    display: inline-block;
+    padding: 8px;
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+}
 
-.loading-coracao span {
-  top: 32px;
-  left: 32px;
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  background: #fd0000;
-  animation: loading-coracao 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-.loading-coracao span:after,
-.loading-coracao span:before {
-  content: " ";
-  position: absolute;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: #fd0000;
-}
-.loading-coracao span:before {
-  left: -24px;
-  border-radius: 50% 0 0 50%;
-}
-.loading-coracao span:after {
-  top: -24px;
-  border-radius: 50% 50% 0 0;
-}
-@keyframes loading-coracao {
-  0% {
-    transform: scale(0.95);
-  }
-  5% {
+#backToTop:hover {
+    background: linear-gradient(45deg, #228B22, #00FF00); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     transform: scale(1.1);
-  }
-  39% {
-    transform: scale(0.85);
-  }
-  45% {
-    transform: scale(1);
-  }
-  60% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(0.9);
-  }
+    opacity: 1;
 }
+
+#backToTop:active {
+    transform: scale(0.95); /* Efeito de clique */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduz a sombra ao clicar */
+}
+
+
     
          
 .clientes-vencidos {
@@ -167,10 +152,7 @@
         color: #00f518; /* Cor do link no modo claro ao passar o mouse */
     }
         
-        body {
-            font-family: Arial, sans-serif;
-            
-        }
+
         h1, button {
             opacity: 0;
             animation: slideIn 0.5s ease forwards;
@@ -236,24 +218,13 @@
             max-width: 300px; 
         }
         
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 20px;
-        }
+
         h1 {
             color: #4CAF50;
+            text-align: center;
         }
         
-        .logo {
-            display: block;
-            /* Centraliza e adiciona margem inferior */
-            margin: 0 auto 10px; 
-            /* Limita a largura da logomarca */
-            max-width: 300px; 
-        }
-        
+       
         table {
             width: 100%;
             border-collapse: collapse;
@@ -314,7 +285,14 @@
         color: #ffffff;
     }
     
-    
+    .meio {
+    background: linear-gradient(to right, #A9A9A9 50%, #000000 50%);
+    color: #ffffff;
+    width: 157px;
+  
+}
+   
+   
     #btnExcluirSelecionados {
     background-color: #FF0000;
     color: #ffffff;
@@ -356,15 +334,16 @@
         
         button:hover {
             background-color: #faff38;
-            color: #00b921;
             transform: scale(1.1);
         }
+        
+        
         .table-container {
             overflow-x: auto;
             max-width: 100%;
         }
 
-                         /* Estilos para o modo escuro */
+         /* Estilos para o modo escuro */
         
         body.dark-mode {
             background-color: #000000;
@@ -390,7 +369,7 @@
         }
         body.dark-mode button:hover {
             background-color: #000000;
-            color: #00f56c;
+            color: #ffffff;
         }
         
         /* Estilos para dispositivos com largura de tela até 414px (Galaxy S23) */
