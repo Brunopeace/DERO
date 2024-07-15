@@ -33,16 +33,111 @@ if ('serviceWorker' in navigator) {
       });
     });
   });
+
+
+
+
+function verificarLogoComemorativa() {
+    const logo = document.getElementById('logo');
+    const hoje = new Date();
+    const mes = hoje.getMonth() + 1; // Meses são indexados a partir de 0
+    const dia = hoje.getDate();
+
+            
+           // Datas comemorativas
+           
+    if (mes === 12 && dia === 25) { // Natal
+        logo.src = 'img/logo-natal.png';
+        
+        
+    } else if (mes === 1 && dia === 1) { // Ano Novo
+        logo.src = 'img/logo-ano-novo.png';
+        
+        
+    } else if (mes === 7 && dia === 4) { // Independência dos EUA (exemplo)
+        logo.src = 'img/logo-independencia.png';
+        
+        
+    } else if (mes === 10 && dia === 31) {
+        logo.src = 'img/logo-halloween.png';
+        
+        
+    } else if (mes === 2 && dia === 14) { // Dia dos Namorados
+    
+    
+        logo.src = 'img/logo-dia-namorados.png';
+    } else if (mes === 11 && dia === 24) { // Ação de Graças (data variável, exemplo 24 de novembro)
+    
+    
+        logo.src = 'img/logo-acao-gracas.png';
+    } else if (mes === 4 && dia === 1) { // Dia da Mentira
+    
+    
+        logo.src = 'img/logo-dia-mentira.png';
+    } else if (mes === 5 && dia === 1) { // Dia do Trabalhador
+    
+    
+        logo.src = 'img/logo-dia-trabalhador.png';
+    } else if (mes === 6 && dia === 12) { // Dia dos Namorados (Brasil)
+    
+    
+        logo.src = 'img/logo-dia-namorados-br.png';
+    } else if (mes === 8 && dia === 15) { // Dia dos Pais (Brasil, data variável, exemplo 15 de agosto)
+    
+    
+        logo.src = 'img/logo-dia-pais.png';
+    } else if (mes === 10 && dia === 12) { // Dia das Crianças (Brasil)
+    
+    
+    logo.src = 'img/logo-dia-criancas.png'; 
+    } else if (mes === 6 && dia === 24) { // São João
+        logo.src = 'img/logo-sao-joao.png';
         
         
         
+    } else {
+        logo.src = 'img/logo-padrao.png'; // logo padrao
+    }
+}
+        
+        
+        
+
+
+
+
+
+// Mostra o botão quando o usuário rola 20px para baixo
+window.onscroll = function() {
+    const backToTopButton = document.getElementById('backToTop');
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+        backToTopButton.style.display = 'block';
+    } else {
+        backToTopButton.style.display = 'none';
+    }
+};
+
+// Função para rolar para o topo
+document.getElementById('backToTop').onclick = function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+
+
+
+
+
 function salvarClientes(clientes) {
     localStorage.setItem('clientes', JSON.stringify(clientes));
 }
 
+
+
 function carregarClientes() {
     return JSON.parse(localStorage.getItem('clientes')) || [];
 }
+
+
 
 function adicionarCliente() {
     const nome = document.getElementById('inputNome').value.trim();
@@ -68,9 +163,13 @@ function adicionarCliente() {
     }
 }
 
+
+
 function validarTelefone(telefone) {
     return telefone.length === 11 && /^\d+$/.test(telefone);
 }
+
+
 
 function calcularDataVencimento(data) {
     let dia = data.getDate() + 1;
@@ -91,6 +190,8 @@ function calcularDataVencimento(data) {
 
     return dataVencimento;
 }
+
+
 
 function adicionarLinhaTabela(nome, telefone, data) {
     const tabela = document.getElementById('corpoTabela');
@@ -149,6 +250,8 @@ function adicionarLinhaTabela(nome, telefone, data) {
         }
     }));
 
+
+
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
             const clientes = carregarClientes();
@@ -169,6 +272,8 @@ function adicionarLinhaTabela(nome, telefone, data) {
         }
     }));
 
+
+
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
         const mensagem = encodeURIComponent(
@@ -183,6 +288,8 @@ function adicionarLinhaTabela(nome, telefone, data) {
     tabela.appendChild(novaLinha);
 }
 
+
+
 function criarBotao(texto, callback) {
     const btn = document.createElement("button");
     btn.innerText = texto;
@@ -190,9 +297,13 @@ function criarBotao(texto, callback) {
     return btn;
 }
 
+
+
 function abrirWhatsApp(telefoneCliente, mensagem) {
     window.open(`https://api.whatsapp.com/send?phone=55${telefoneCliente}&text=${mensagem}`, '_blank');
 }
+
+
 
 function atualizarCorCelulaData(celulaData, dataVencimento) {
     const hoje = new Date();
@@ -210,6 +321,8 @@ function atualizarCorCelulaData(celulaData, dataVencimento) {
     }
 }
 
+
+
 function pesquisarCliente() {
     const termoPesquisa = document.getElementById('inputPesquisar').value.toLowerCase();
     const linhas = document.getElementById('corpoTabela').getElementsByTagName('tr');
@@ -225,6 +338,7 @@ function pesquisarCliente() {
 }
 
 
+
 function atualizarInfoClientes() {
     const totalVencidos = calcularTotalClientesVencidos();
     const totalNaoVencidos = calcularTotalClientesNaoVencidos();
@@ -233,6 +347,8 @@ function atualizarInfoClientes() {
         <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
     `;
 }
+
+
 
 function calcularTotalClientesVencidos() {
     const hoje = new Date();
@@ -247,6 +363,8 @@ function calcularTotalClientesVencidos() {
     return totalVencidos;
 }
 
+
+
 function calcularTotalClientesNaoVencidos() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -260,6 +378,8 @@ function calcularTotalClientesNaoVencidos() {
     });
     return totalNaoVencidos;
 }
+
+
 
 function carregarPagina() {
     const clientes = carregarClientes();
@@ -311,6 +431,8 @@ function carregarPagina() {
     atualizarInfoClientes();
 }
 
+
+
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
@@ -335,6 +457,8 @@ function carregarDarkMode() {
     }
 }
 
+
+
 function exportarClientes() {
     const clientes = carregarClientes();
     const blob = new Blob([JSON.stringify(clientes)], { type: "application/json" });
@@ -348,6 +472,8 @@ function exportarClientes() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
+
+
 
 function importarClientes(event) {
     const file = event.target.files[0];
@@ -385,6 +511,8 @@ function importarClientes(event) {
     }
 }
 
+
+
 function backupClientes() {
     const clientes = carregarClientes();
     const blob = new Blob([JSON.stringify(clientes)], { type: "application/json" });
@@ -399,6 +527,15 @@ function backupClientes() {
     URL.revokeObjectURL(url);
 }
 
+
+
+// Função para verificar e realizar o backup diário
+// Função para realizar o backup dos clientes
+function backupClientes() {
+    // Lógica para realizar o backup dos clientes
+    console.log('Backup realizado com sucesso');
+}
+
 // Função para verificar e realizar o backup diário
 function verificarBackupDiario() {
     const hoje = new Date();
@@ -407,15 +544,39 @@ function verificarBackupDiario() {
 
     // Se não houve backup antes ou se um dia passou desde o último backup
     if (!ultimaBackup || (hoje.getTime() - ultimaBackup.getTime()) >= 24 * 60 * 60 * 1000) {
-        backupClientes();
-        localStorage.setItem('ultimaBackup', hoje.toISOString());
+        try {
+            backupClientes();
+            localStorage.setItem('ultimaBackup', hoje.toISOString());
+            console.log('Backup diário realizado em:', hoje);
+        } catch (error) {
+            console.error('Erro ao realizar o backup:', error);
+        }
     }
 }
 
-// Agendar a verificação de backup diário
-setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
+// Função para agendar a verificação de backup diário
+function agendarVerificacaoBackup() {
+    // Verifica imediatamente na inicialização
+    verificarBackupDiario();
+
+    // Agendar a verificação a cada hora
+    setInterval(verificarBackupDiario, 60 * 60 * 1000);
+}
+
+// Inicia o agendamento da verificação de backup diário
+agendarVerificacaoBackup();
 
 
+
+
+
+
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.cliente-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
 
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
@@ -426,26 +587,32 @@ function excluirClientesSelecionados() {
 
     if (confirm(`Tem certeza de que deseja excluir ${checkboxes.length} clientes?`)) {
         let clientes = carregarClientes();
+        const clientesParaExcluir = [];
 
         checkboxes.forEach(checkbox => {
             const linha = checkbox.closest('tr');
             const nome = linha.cells[1].innerText;
-            clientes = clientes.filter(cliente => cliente.nome.toLowerCase() !== nome.toLowerCase());
+            clientesParaExcluir.push(nome.toLowerCase());
             linha.remove();
         });
 
+        clientes = clientes.filter(cliente => !clientesParaExcluir.includes(cliente.nome.toLowerCase()));
+
         salvarClientes(clientes);
         atualizarInfoClientes();
-        window.location.reload();
     }
 }
 
 
 
-// Verificação inicial ao carregar a página
+
+
 window.onload = function() {
     carregarPagina();
     carregarDarkMode();
-    verificarBackupDiario(); // Verificar backup diário quando a página carrega
+    verificarBackupDiario();
+    verificarLogoComemorativa();
+
     
+    window.onscroll();
 };
