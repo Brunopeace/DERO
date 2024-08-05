@@ -34,6 +34,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 
+
+
         
         
 
@@ -743,32 +745,25 @@ document.getElementById('select-all').addEventListener('change', function() {
 
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
-    if (checkboxes.length === 0) {
-        alert('Selecione pelo menos um cliente para excluir.');
-        return;
-    }
+    const clientes = carregarClientes();
+    const lixeira = carregarLixeira();
 
-    if (confirm(`Tem certeza de que deseja excluir ${checkboxes.length} clientes?`)) {
-        let clientes = carregarClientes();
-        let lixeira = carregarLixeira();
-        const clientesParaExcluir = [];
+    checkboxes.forEach(checkbox => {
+        const nome = checkbox.closest('tr').getAttribute('data-nome');
+        const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
 
-        checkboxes.forEach(checkbox => {
-            const linha = checkbox.closest('tr');
-            const nome = linha.cells[1].innerText;
-            clientesParaExcluir.push(nome.toLowerCase());
-            const clienteExcluido = clientes.find(cliente => cliente.nome.toLowerCase() === nome.toLowerCase());
-            lixeira.push(clienteExcluido); // Adiciona o cliente à lixeira
-            linha.remove();
-        });
+        if (clienteIndex !== -1) {
+            const cliente = clientes.splice(clienteIndex, 1)[0];
+            lixeira.push(cliente);
+        }
+    });
 
-        clientes = clientes.filter(cliente => !clientesParaExcluir.includes(cliente.nome.toLowerCase()));
+    salvarClientes(clientes);
+    salvarLixeira(lixeira);
 
-        salvarClientes(clientes);
-        salvarLixeira(lixeira); // Salva a lixeira atualizada
-        atualizarInfoClientes();
-        carregarLixeiraPagina();
-    }
+    // Atualiza a tabela de clientes e a lixeira
+    atualizarTabelaClientes();
+    carregarLixeiraPagina();
 }
 
 
