@@ -34,17 +34,8 @@ if ('serviceWorker' in navigator) {
     });
   });
 
-
-
-
-
         
         
-        
-
-
-
-
 
 // Mostra o botão quando o usuário rola 20px para baixo
 window.onscroll = function() {
@@ -63,8 +54,113 @@ document.getElementById('backToTop').onclick = function() {
 
 
 
+function esvaziarLixeira() {
+    if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
+        localStorage.removeItem('lixeira');
+        carregarLixeiraPagina();
+    }
+}
+
+function carregarLixeiraPagina() {
+    const lixeira = carregarLixeira();
+    const tbody = document.querySelector('#tabelaLixeira tbody');
+    tbody.innerHTML = '';
+
+    lixeira.forEach(cliente => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="checkbox" class="checkboxCliente" data-nome="${cliente.nome}"></td>
+            <td>${cliente.nome}</td>
+            <td>
+                <button onclick="restaurarCliente('${cliente.nome}')">Restaurar</button>
+                <button onclick="removerPermanentemente('${cliente.nome}')">Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Atualiza o botão de esvaziar lixeira
+    const esvaziarLixeiraButton = document.getElementById('esvaziarLixeira');
+    if (lixeira.length === 0) {
+        esvaziarLixeiraButton.style.display = 'none';
+    } else {
+        esvaziarLixeiraButton.style.display = 'block';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    carregarLixeiraPagina();
+});
 
 
+
+
+function removerPermanentemente(nome) {
+    const lixeira = carregarLixeira();
+    const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+
+    if (clienteIndex !== -1) {
+        lixeira.splice(clienteIndex, 1);
+        salvarLixeira(lixeira);
+
+        window.location.reload();
+    }
+}
+
+function carregarLixeira() {
+    const lixeira = localStorage.getItem('lixeira');
+    return lixeira ? JSON.parse(lixeira) : [];
+}
+
+function salvarLixeira(lixeira) {
+    localStorage.setItem('lixeira', JSON.stringify(lixeira));
+}
+
+window.addEventListener('load', carregarLixeiraPagina);
+
+
+function restaurarCliente(nome) {
+    const lixeira = carregarLixeira();
+    const clientes = carregarClientes();
+    const clienteIndex = lixeira.findIndex(c => c.nome === nome);
+
+    if (clienteIndex !== -1) {
+        const cliente = lixeira.splice(clienteIndex, 1)[0];
+        clientes.push(cliente);
+
+        salvarClientes(clientes);
+        salvarLixeira(lixeira);
+        carregarLixeiraPagina();
+        atualizarInfoClientes();
+        atualizarTabelaClientes();
+
+        // Obter a célula de data da linha do cliente restaurado
+        const linhaCliente = document.querySelector(`tr[data-nome='${nome}']`);
+        const celulaData = linhaCliente ? linhaCliente.querySelector('.celula-data') : null;
+
+        if (celulaData) {
+            atualizarCorCelulaData(celulaData, new Date(cliente.data));
+        }
+    }
+}
+
+
+
+function atualizarTabelaClientes() {
+    const clientes = carregarClientes();
+    const tabela = document.getElementById('corpoTabela');
+    tabela.innerHTML = '';
+
+    clientes.forEach(cliente => {
+        adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data);
+    });
+}
+
+
+
+function carregarClientes() {
+    return JSON.parse(localStorage.getItem('clientes')) || [];
+}
 
 function salvarClientes(clientes) {
     localStorage.setItem('clientes', JSON.stringify(clientes));
@@ -72,8 +168,95 @@ function salvarClientes(clientes) {
 
 
 
-function carregarClientes() {
-    return JSON.parse(localStorage.getItem('clientes')) || [];
+function alternarLixeira() {
+    const containerLixeira = document.getElementById('containerLixeira');
+    const toggleButton = document.getElementById('toggleLixeira');
+
+    if (containerLixeira.style.display === 'none') {
+        containerLixeira.style.display = 'block';
+        toggleButton.textContent = 'Fechar Lixeira';
+    } else {
+        containerLixeira.style.display = 'none';
+        toggleButton.textContent = 'Abrir Lixeira';
+    }
+}
+
+
+
+function excluirCliente(nome) {
+    const clientes = carregarClientes();
+    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+
+    if (clienteIndex !== -1) {
+        const cliente = clientes.splice(clienteIndex, 1)[0];
+        salvarClientes(clientes);
+
+        const lixeira = carregarLixeira();
+        lixeira.push(cliente);
+        salvarLixeira(lixeira);
+
+        // Adiciona a classe de animação de desintegração
+        const linhaCliente = document.querySelector(`tr[data-nome="${nome}"]`);
+        if (linhaCliente) {
+            linhaCliente.classList.add('desintegrate');
+            setTimeout(() => {
+                linhaCliente.remove();
+                atualizarInfoClientes();
+                carregarLixeiraPagina(); // Atualiza a lixeira após a exclusão
+            }, 500); // Tempo da animação em milissegundos
+        }
+    }
+}
+
+
+
+function pesquisarClientesLixeira() {
+    const input = document.getElementById('pesquisarLixeira');
+    const filter = input.value.toLowerCase();
+    const trs = document.querySelectorAll('#tabelaLixeira tbody tr');
+
+    trs.forEach(tr => {
+        const td = tr.querySelector('td:nth-child(2)');
+        if (td) {
+            const textValue = td.textContent || td.innerText;
+            if (textValue.toLowerCase().indexOf(filter) > -1) {
+                tr.style.display = '';
+            } else {
+                tr.style.display = 'none';
+            }
+        }
+    });
+}
+
+
+function toggleSelecionarTodos(source) {
+    const checkboxes = document.querySelectorAll('.checkboxCliente');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = source.checked;
+    });
+}
+
+
+
+function restaurarSelecionados() {
+    const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
+    const lixeira = carregarLixeira();
+    const clientes = carregarClientes();
+
+    checkboxes.forEach(checkbox => {
+        const nome = checkbox.getAttribute('data-nome');
+        const clienteIndex = lixeira.findIndex(c => c.nome === nome);
+        if (clienteIndex !== -1) {
+            const cliente = lixeira.splice(clienteIndex, 1)[0];
+            clientes.push(cliente);
+        }
+    });
+
+    salvarClientes(clientes);
+    salvarLixeira(lixeira);
+    carregarLixeiraPagina();
+    atualizarInfoClientes();
+    atualizarTabelaClientes();
 }
 
 
@@ -131,12 +314,11 @@ function calcularDataVencimento(data) {
 }
 
 
-
 function adicionarLinhaTabela(nome, telefone, data) {
     const tabela = document.getElementById('corpoTabela');
     const novaLinha = document.createElement('tr');
-
-    // Adiciona a caixa de seleção
+    novaLinha.setAttribute('data-nome', nome); // Adiciona o atributo data-nome
+    
     const celulaSelecionar = novaLinha.insertCell(0);
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -151,13 +333,14 @@ function adicionarLinhaTabela(nome, telefone, data) {
 
     const celulaData = novaLinha.insertCell(3);
     celulaData.innerText = new Date(data).toLocaleDateString('pt-BR');
+    celulaData.classList.add('celula-data');
 
     const celulaAcoes = novaLinha.insertCell(4);
 
     celulaAcoes.appendChild(criarBotao("Editar", function() {
         const novoNome = prompt("Digite o novo nome do cliente:", nome);
         const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", data.toLocaleDateString('pt-BR'));
+        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
 
         if (novoNome && validarTelefone(novoTelefone) && novaData) {
             const partesData = novaData.split('/');
@@ -168,16 +351,7 @@ function adicionarLinhaTabela(nome, telefone, data) {
                     celulaTelefone.innerText = novoTelefone;
                     celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                    const clientes = carregarClientes();
-                    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-                    if (clienteIndex !== -1) {
-                        clientes[clienteIndex].nome = novoNome;
-                        clientes[clienteIndex].telefone = novoTelefone;
-                        clientes[clienteIndex].data = novaDataVencimento;
-                        salvarClientes(clientes);
-                        atualizarCorCelulaData(celulaData, novaDataVencimento);
-                        window.location.reload();
-                    }
+                    editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
                 } else {
                     alert("Data inválida. Use o formato DD/MM/AAAA.");
                 }
@@ -189,29 +363,11 @@ function adicionarLinhaTabela(nome, telefone, data) {
         }
     }));
 
-
-
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
-            const clientes = carregarClientes();
-            const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-            if (clienteIndex !== -1) {
-                clientes.splice(clienteIndex, 1);
-                salvarClientes(clientes);
-
-                // Adiciona a classe de animação de desintegração
-                novaLinha.classList.add('desintegrate');
-
-                // Remove a linha da tabela após a animação
-                setTimeout(() => {
-                    tabela.deleteRow(novaLinha.rowIndex - 1);
-                    atualizarInfoClientes();
-                }, 500); // Tempo da animação em milissegundos
-            }
+            excluirCliente(nome); // Chama a função de exclusão que move o cliente para a lixeira
         }
     }));
-
-
 
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
@@ -222,9 +378,99 @@ function adicionarLinhaTabela(nome, telefone, data) {
         abrirWhatsApp(telefoneCliente, mensagem);
     }));
 
-    atualizarCorCelulaData(celulaData, data);
+    atualizarCorCelulaData(celulaData, new Date(data)); // Atualiza a cor da célula de data
 
     tabela.appendChild(novaLinha);
+    return novaLinha; // Retorna a linha completa
+}
+
+
+
+function renovarCliente(nomeCliente) {
+            const clientesHoje = JSON.parse(localStorage.getItem('clientesHoje')) || { nomes: [] };
+            if (!clientesHoje.nomes.includes(nomeCliente)) {
+                clientesHoje.nomes.push(nomeCliente);
+                localStorage.setItem('clientesHoje', JSON.stringify(clientesHoje));
+                exibirClientesAlterados();
+            }
+        }
+
+
+
+function atualizarClientesAlterados(nome) {
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    let clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
+    let clientesHoje = clientesAlterados.find(c => c.data === hoje);
+
+    if (!clientesHoje) {
+        clientesHoje = { data: hoje, nomes: [] };
+        clientesAlterados.push(clientesHoje);
+    }
+
+    if (!clientesHoje.nomes.includes(nome)) {
+        clientesHoje.nomes.push(nome);
+        localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
+        exibirClientesAlterados();
+    }
+}
+
+
+
+function exibirClientesAlterados() {
+    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
+    const hoje = new Date().toLocaleDateString('pt-BR');
+    const clientesHoje = clientesAlterados.find(c => c.data === hoje);
+    const campoClientesAlterados = document.getElementById('infoClientes');
+
+    if (clientesHoje && clientesHoje.nomes.length > 0) {
+        campoClientesAlterados.innerHTML = '<span class="titulo-clientes-renovados">Renovados hoje: </span><br><br>' + clientesHoje.nomes.join(', ');
+    } else {
+        campoClientesAlterados.innerHTML = '<span class="nenhum-cliente-renovado">Nenhum cliente renovado hoje</span>';
+    }
+}
+
+window.addEventListener('load', exibirClientesAlterados);
+
+
+function atualizarDataVencimento(nomeCliente, novaData) {
+    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    let clienteExistente = clientes.find(c => c.nome === nomeCliente);
+
+    if (clienteExistente) {
+        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
+        let novaDataFormatada = new Date(novaData).toLocaleDateString('pt-BR');
+
+        if (dataAnterior !== novaDataFormatada) {
+            clienteExistente.data = novaData;
+            localStorage.setItem('clientes', JSON.stringify(clientes));
+            atualizarClientesAlterados(nomeCliente);
+        }
+    }
+}
+
+
+
+function editarCliente(nomeCliente, novoNome, novoTelefone, novaDataVencimento) {
+    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    let clienteExistente = clientes.find(c => c.nome === nomeCliente);
+
+    if (clienteExistente) {
+        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
+        let novaDataFormatada = new Date(novaDataVencimento).toLocaleDateString('pt-BR');
+        
+        // Atualiza o nome e telefone se necessário
+        clienteExistente.nome = novoNome;
+        clienteExistente.telefone = novoTelefone;
+
+        // Atualiza a data de vencimento e exibe alteração se necessário
+        if (dataAnterior !== novaDataFormatada) {
+            clienteExistente.data = novaDataVencimento;
+            atualizarClientesAlterados(nomeCliente);
+        }
+    }
+
+    localStorage.setItem('clientes', JSON.stringify(clientes));
+    window.location.reload(); // Recarrega a página para atualizar a exibição
 }
 
 
@@ -281,7 +527,7 @@ function pesquisarCliente() {
 function atualizarInfoClientes() {
     const totalVencidos = calcularTotalClientesVencidos();
     const totalNaoVencidos = calcularTotalClientesNaoVencidos();
-    document.getElementById('infoClientes').innerHTML = `
+    document.getElementById('infoClientes2').innerHTML = `
         <span class="clientes-vencidos">Clientes vencidos: ${totalVencidos}</span><br>
         <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
     `;
@@ -383,6 +629,8 @@ function toggleDarkMode() {
     localStorage.setItem('dark-mode', isDarkMode);
 }
 
+
+
 function carregarDarkMode() {
     const isDarkMode = localStorage.getItem('dark-mode') === 'true';
     const body = document.body;
@@ -469,13 +717,6 @@ function backupClientes() {
 
 
 // Função para verificar e realizar o backup diário
-// Função para realizar o backup dos clientes
-function backupClientes() {
-    // Lógica para realizar o backup dos clientes
-    console.log('Backup realizado com sucesso');
-}
-
-// Função para verificar e realizar o backup diário
 function verificarBackupDiario() {
     const hoje = new Date();
     const ultimaBackupStr = localStorage.getItem('ultimaBackup');
@@ -483,32 +724,13 @@ function verificarBackupDiario() {
 
     // Se não houve backup antes ou se um dia passou desde o último backup
     if (!ultimaBackup || (hoje.getTime() - ultimaBackup.getTime()) >= 24 * 60 * 60 * 1000) {
-        try {
-            backupClientes();
-            localStorage.setItem('ultimaBackup', hoje.toISOString());
-            console.log('Backup diário realizado em:', hoje);
-        } catch (error) {
-            console.error('Erro ao realizar o backup:', error);
-        }
+        backupClientes();
+        localStorage.setItem('ultimaBackup', hoje.toISOString());
     }
 }
 
-// Função para agendar a verificação de backup diário
-function agendarVerificacaoBackup() {
-    // Verifica imediatamente na inicialização
-    verificarBackupDiario();
-
-    // Agendar a verificação a cada hora
-    setInterval(verificarBackupDiario, 60 * 60 * 1000);
-}
-
-// Inicia o agendamento da verificação de backup diário
-agendarVerificacaoBackup();
-
-
-
-
-
+// Agendar a verificação de backup diário
+setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
 
 document.getElementById('select-all').addEventListener('change', function() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox');
@@ -516,6 +738,8 @@ document.getElementById('select-all').addEventListener('change', function() {
         checkbox.checked = this.checked;
     });
 });
+
+
 
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
@@ -526,31 +750,35 @@ function excluirClientesSelecionados() {
 
     if (confirm(`Tem certeza de que deseja excluir ${checkboxes.length} clientes?`)) {
         let clientes = carregarClientes();
+        let lixeira = carregarLixeira();
         const clientesParaExcluir = [];
 
         checkboxes.forEach(checkbox => {
             const linha = checkbox.closest('tr');
             const nome = linha.cells[1].innerText;
             clientesParaExcluir.push(nome.toLowerCase());
+            const clienteExcluido = clientes.find(cliente => cliente.nome.toLowerCase() === nome.toLowerCase());
+            lixeira.push(clienteExcluido); // Adiciona o cliente à lixeira
             linha.remove();
         });
 
         clientes = clientes.filter(cliente => !clientesParaExcluir.includes(cliente.nome.toLowerCase()));
 
         salvarClientes(clientes);
+        salvarLixeira(lixeira); // Salva a lixeira atualizada
         atualizarInfoClientes();
+        carregarLixeiraPagina();
     }
 }
 
 
 
-
-
 window.onload = function() {
+
     carregarPagina();
     carregarDarkMode();
     verificarBackupDiario();
-
-    
+    exibirClientesAlterados();
+    // Chama a função de scroll para garantir que o botão seja configurado corretamente
     window.onscroll();
 };
