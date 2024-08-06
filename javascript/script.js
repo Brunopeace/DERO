@@ -33,244 +33,17 @@ if ('serviceWorker' in navigator) {
       });
     });
   });
+        
+        
 
-
-
-// Mostra o botão quando o usuário rola 20px para baixo
-window.onscroll = function() {
-    const backToTopButton = document.getElementById('backToTop');
-    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-        backToTopButton.style.display = 'block';
-    } else {
-        backToTopButton.style.display = 'none';
-    }
-};
-
-// Função para rolar para o topo
-document.getElementById('backToTop').onclick = function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-
-
-
-function esvaziarLixeira() {
-    if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
-        localStorage.removeItem('lixeira');
-        carregarLixeiraPagina();
-    }
-}
-
-
-
-function carregarLixeiraPagina() {
-    const lixeira = carregarLixeira();
-    const tbody = document.querySelector('#tabelaLixeira tbody');
-    tbody.innerHTML = '';
-
-    lixeira.forEach(cliente => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><input type="checkbox" class="checkboxCliente" data-nome="${cliente.nome}"></td>
-            <td>${cliente.nome}</td>
-            <td>
-                <button onclick="restaurarCliente('${cliente.nome}')">Restaurar</button>
-                <button onclick="removerPermanentemente('${cliente.nome}')">Excluir</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-
-    // Atualiza o botão de esvaziar lixeira
-    const esvaziarLixeiraButton = document.getElementById('esvaziarLixeira');
-    if (lixeira.length === 0) {
-        esvaziarLixeiraButton.style.display = 'none';
-    } else {
-        esvaziarLixeiraButton.style.display = 'block';
-    }
-
-    // Exibir quantidade de clientes na lixeira
-    const quantidadeClientes = contarClientesLixeira();
-    document.getElementById('quantidadeClientesLixeira').textContent = `Clientes na lixeira: ${quantidadeClientes}`;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    carregarLixeiraPagina();
-});
-
-
-
-
-function removerPermanentemente(nome) {
-    const lixeira = carregarLixeira();
-    const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-
-    if (clienteIndex !== -1) {
-        lixeira.splice(clienteIndex, 1);
-        salvarLixeira(lixeira);
-
-        window.location.reload();
-    }
-}
-
-function carregarLixeira() {
-    const lixeira = localStorage.getItem('lixeira');
-    return lixeira ? JSON.parse(lixeira) : [];
-}
-
-function salvarLixeira(lixeira) {
-    localStorage.setItem('lixeira', JSON.stringify(lixeira));
-}
-
-window.addEventListener('load', carregarLixeiraPagina);
-
-
-function restaurarCliente(nome) {
-    const lixeira = carregarLixeira();
-    const clientes = carregarClientes();
-    const clienteIndex = lixeira.findIndex(c => c.nome === nome);
-
-    if (clienteIndex !== -1) {
-        const cliente = lixeira.splice(clienteIndex, 1)[0];
-        clientes.push(cliente);
-
-        salvarClientes(clientes);
-        salvarLixeira(lixeira);
-        carregarLixeiraPagina();
-        atualizarInfoClientes();
-        atualizarTabelaClientes();
-
-        // Obter a célula de data da linha do cliente restaurado
-        const linhaCliente = document.querySelector(`tr[data-nome='${nome}']`);
-        const celulaData = linhaCliente ? linhaCliente.querySelector('.celula-data') : null;
-
-        if (celulaData) {
-            atualizarCorCelulaData(celulaData, new Date(cliente.data));
-        }
-    }
-}
-
-
-
-function atualizarTabelaClientes() {
-    const clientes = carregarClientes();
-    const tabela = document.getElementById('corpoTabela');
-    tabela.innerHTML = '';
-
-    clientes.forEach(cliente => {
-        adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data);
-    });
-}
-
-
-
-function carregarClientes() {
-    return JSON.parse(localStorage.getItem('clientes')) || [];
-}
 
 function salvarClientes(clientes) {
     localStorage.setItem('clientes', JSON.stringify(clientes));
 }
 
-window.addEventListener('load', function() {
-    const clientes = carregarClientes();
-    clientes.forEach(cliente => adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data));
-});
-
-function alternarLixeira() {
-    const containerLixeira = document.getElementById('containerLixeira');
-    const toggleButton = document.getElementById('toggleLixeira');
-
-    if (containerLixeira.style.display === 'none') {
-        containerLixeira.style.display = 'block';
-        toggleButton.textContent = 'Fechar Lixeira';
-    } else {
-        containerLixeira.style.display = 'none';
-        toggleButton.textContent = 'Abrir Lixeira';
-    }
+function carregarClientes() {
+    return JSON.parse(localStorage.getItem('clientes')) || [];
 }
-
-
-
-function excluirCliente(nome) {
-    const clientes = carregarClientes();
-    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-
-    if (clienteIndex !== -1) {
-        const cliente = clientes.splice(clienteIndex, 1)[0];
-        salvarClientes(clientes);
-
-        const lixeira = carregarLixeira();
-        lixeira.push(cliente);
-        salvarLixeira(lixeira);
-
-        // Adiciona a classe de animação de desintegração
-        const linhaCliente = document.querySelector(`tr[data-nome="${nome}"]`);
-        if (linhaCliente) {
-            linhaCliente.classList.add('desintegrate');
-            setTimeout(() => {
-                linhaCliente.remove();
-                atualizarInfoClientes();
-                carregarLixeiraPagina(); // Atualiza a lixeira após a exclusão
-            }, 500); // Tempo da animação em milissegundos
-        }
-    }
-}
-
-
-
-function pesquisarClientesLixeira() {
-    const input = document.getElementById('pesquisarLixeira');
-    const filter = input.value.toLowerCase();
-    const trs = document.querySelectorAll('#tabelaLixeira tbody tr');
-
-    trs.forEach(tr => {
-        const td = tr.querySelector('td:nth-child(2)');
-        if (td) {
-            const textValue = td.textContent || td.innerText;
-            if (textValue.toLowerCase().indexOf(filter) > -1) {
-                tr.style.display = '';
-            } else {
-                tr.style.display = 'none';
-            }
-        }
-    });
-}
-
-
-function toggleSelecionarTodos(source) {
-    const checkboxes = document.querySelectorAll('.checkboxCliente');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = source.checked;
-    });
-}
-
-
-
-function restaurarSelecionados() {
-    const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
-    const lixeira = carregarLixeira();
-    let clientes = carregarClientes();
-
-    checkboxes.forEach(checkbox => {
-        const nome = checkbox.getAttribute('data-nome');
-        const clienteIndex = lixeira.findIndex(c => c.nome === nome);
-        const clienteExistente = clientes.some(cliente => cliente.nome === nome);
-
-        if (clienteIndex !== -1 && !clienteExistente) {
-            const cliente = lixeira.splice(clienteIndex, 1)[0];
-            clientes.push(cliente);
-        }
-    });
-
-    salvarClientes(clientes);
-    salvarLixeira(lixeira);
-    carregarLixeiraPagina();
-    atualizarInfoClientes();
-    atualizarTabelaClientes();
-}
-
-
 
 function adicionarCliente() {
     const nome = document.getElementById('inputNome').value.trim();
@@ -296,13 +69,9 @@ function adicionarCliente() {
     }
 }
 
-
-
 function validarTelefone(telefone) {
     return telefone.length === 11 && /^\d+$/.test(telefone);
 }
-
-
 
 function calcularDataVencimento(data) {
     let dia = data.getDate() + 1;
@@ -324,12 +93,11 @@ function calcularDataVencimento(data) {
     return dataVencimento;
 }
 
-
 function adicionarLinhaTabela(nome, telefone, data) {
     const tabela = document.getElementById('corpoTabela');
     const novaLinha = document.createElement('tr');
-    novaLinha.setAttribute('data-nome', nome); // Adiciona o atributo data-nome
-    
+
+    // Adiciona a caixa de seleção
     const celulaSelecionar = novaLinha.insertCell(0);
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
@@ -344,169 +112,77 @@ function adicionarLinhaTabela(nome, telefone, data) {
 
     const celulaData = novaLinha.insertCell(3);
     celulaData.innerText = new Date(data).toLocaleDateString('pt-BR');
-    celulaData.classList.add('celula-data');
 
     const celulaAcoes = novaLinha.insertCell(4);
 
     celulaAcoes.appendChild(criarBotao("Editar", function() {
-    const novoNome = prompt("Digite o novo nome do cliente:", nome);
-    const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-    const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
+        const novoNome = prompt("Digite o novo nome do cliente:", nome);
+        const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
+        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", data.toLocaleDateString('pt-BR'));
 
-    if (novoNome && validarTelefone(novoTelefone) && novaData) {
-        const partesData = novaData.split('/');
-        if (partesData.length === 3) {
-            const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-            if (!isNaN(novaDataVencimento.getTime())) {
-                celulaNome.innerText = novoNome;
-                celulaTelefone.innerText = novoTelefone;
-                celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
+        if (novoNome && validarTelefone(novoTelefone) && novaData) {
+            const partesData = novaData.split('/');
+            if (partesData.length === 3) {
+                const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+                if (!isNaN(novaDataVencimento.getTime())) {
+                    celulaNome.innerText = novoNome;
+                    celulaTelefone.innerText = novoTelefone;
+                    celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
+                    const clientes = carregarClientes();
+                    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+                    if (clienteIndex !== -1) {
+                        clientes[clienteIndex].nome = novoNome;
+                        clientes[clienteIndex].telefone = novoTelefone;
+                        clientes[clienteIndex].data = novaDataVencimento;
+                        salvarClientes(clientes);
+                        atualizarCorCelulaData(celulaData, novaDataVencimento);
+                        window.location.reload();
+                    }
+                } else {
+                    alert("Data inválida. Use o formato DD/MM/AAAA.");
+                }
             } else {
-                alert("Data inválida. Use o formato DD/MM/AAAA.");
+                alert("Formato de data inválido. Use DD/MM/AAAA.");
             }
         } else {
-            alert("Formato de data inválido. Use DD/MM/AAAA.");
+            alert("Por favor, preencha todos os campos corretamente.");
         }
-    } else {
-        alert("Por favor, preencha todos os campos corretamente.");
-    }
-}));
+    }));
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
-            excluirCliente(nome); // Chama a função de exclusão que move o cliente para a lixeira
+            const clientes = carregarClientes();
+            const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+            if (clienteIndex !== -1) {
+                clientes.splice(clienteIndex, 1);
+                salvarClientes(clientes);
+
+                // Adiciona a classe de animação de desintegração
+                novaLinha.classList.add('desintegrate');
+
+                // Remove a linha da tabela após a animação
+                setTimeout(() => {
+                    tabela.deleteRow(novaLinha.rowIndex - 1);
+                    atualizarInfoClientes();
+                }, 500); // Tempo da animação em milissegundos
+            }
         }
     }));
 
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CPF* \n \n 05222280462 `
+            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CPF* \n \n 05222280462`
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
     }));
 
-    atualizarCorCelulaData(celulaData, new Date(data)); // Atualiza a cor da célula de data
+    atualizarCorCelulaData(celulaData, data);
 
     tabela.appendChild(novaLinha);
-    return novaLinha; // Retorna a linha completa
 }
-
-
-
-function renovarCliente(nomeCliente) {
-            const clientesHoje = JSON.parse(localStorage.getItem('clientesHoje')) || { nomes: [] };
-            if (!clientesHoje.nomes.includes(nomeCliente)) {
-                clientesHoje.nomes.push(nomeCliente);
-                localStorage.setItem('clientesHoje', JSON.stringify(clientesHoje));
-                exibirClientesAlterados();
-            }
-        }
-
-
-
-function atualizarClientesAlterados(nome) {
-    const hoje = new Date().toLocaleDateString('pt-BR');
-    let clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
-    let clientesHoje = clientesAlterados.find(c => c.data === hoje);
-
-    if (!clientesHoje) {
-        clientesHoje = { data: hoje, nomes: [] };
-        clientesAlterados.push(clientesHoje);
-    }
-
-    if (!clientesHoje.nomes.includes(nome)) {
-        clientesHoje.nomes.push(nome);
-        localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
-        exibirClientesAlterados();
-    }
-}
-
-
-
-function exibirClientesAlterados() {
-    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
-    const hoje = new Date().toLocaleDateString('pt-BR');
-    const clientesHoje = clientesAlterados.find(c => c.data === hoje);
-    const campoClientesAlterados = document.getElementById('infoClientes');
-
-    if (clientesHoje && clientesHoje.nomes.length > 0) {
-        const listaClientes = clientesHoje.nomes.map(nome => `<li>${nome}</li>`).join('');
-        campoClientesAlterados.innerHTML = `<span class="titulo-clientes-renovados">Clientes renovados hoje:</span><ul>${listaClientes}</ul>`;
-    } else {
-        campoClientesAlterados.innerHTML = '<span class="nenhum-cliente-renovado">Nenhum cliente renovado hoje</span>';
-    }
-}
-
-
-function atualizarDataVencimento(nomeCliente, novaData) {
-    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-    let clienteExistente = clientes.find(c => c.nome === nomeCliente);
-
-    if (clienteExistente) {
-        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
-        let novaDataFormatada = new Date(novaData).toLocaleDateString('pt-BR');
-
-        if (dataAnterior !== novaDataFormatada) {
-            clienteExistente.data = novaData;
-            localStorage.setItem('clientes', JSON.stringify(clientes));
-            atualizarClientesAlterados(nomeCliente);
-        }
-    }
-}
-
-
-
-
-function registrarClienteAlterado(nome) {
-    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
-    const hoje = new Date().toLocaleDateString('pt-BR');
-
-    let clienteHoje = clientesAlterados.find(c => c.data === hoje);
-
-    if (!clienteHoje) {
-        clienteHoje = { data: hoje, nomes: [] };
-        clientesAlterados.push(clienteHoje);
-    }
-
-    if (!clienteHoje.nomes.includes(nome)) {
-        clienteHoje.nomes.push(nome);
-    }
-
-    localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
-}
-
-
-
-function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
-    let clientes = carregarClientes();
-    let clienteExistente = clientes.find(c => c.nome.toLowerCase() === nomeAntigo.toLowerCase());
-
-    if (clienteExistente) {
-        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
-        let novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
-
-        // Atualizar apenas se a data de vencimento foi alterada
-        if (dataAnterior !== novaDataFormatada) {
-            clienteExistente.nome = novoNome;
-            clienteExistente.telefone = novoTelefone;
-            clienteExistente.data = novaDataVencimento;
-
-            localStorage.setItem('clientes', JSON.stringify(clientes));
-            atualizarClientesAlterados(novoNome); // Registrar cliente alterado
-        }
-    }
-}
-
-
-
-
-
-
-
 
 function criarBotao(texto, callback) {
     const btn = document.createElement("button");
@@ -515,13 +191,9 @@ function criarBotao(texto, callback) {
     return btn;
 }
 
-
-
 function abrirWhatsApp(telefoneCliente, mensagem) {
     window.open(`https://api.whatsapp.com/send?phone=55${telefoneCliente}&text=${mensagem}`, '_blank');
 }
-
-
 
 function atualizarCorCelulaData(celulaData, dataVencimento) {
     const hoje = new Date();
@@ -539,8 +211,6 @@ function atualizarCorCelulaData(celulaData, dataVencimento) {
     }
 }
 
-
-
 function pesquisarCliente() {
     const termoPesquisa = document.getElementById('inputPesquisar').value.toLowerCase();
     const linhas = document.getElementById('corpoTabela').getElementsByTagName('tr');
@@ -556,17 +226,14 @@ function pesquisarCliente() {
 }
 
 
-
 function atualizarInfoClientes() {
     const totalVencidos = calcularTotalClientesVencidos();
     const totalNaoVencidos = calcularTotalClientesNaoVencidos();
-    document.getElementById('infoClientes2').innerHTML = `
+    document.getElementById('infoClientes').innerHTML = `
         <span class="clientes-vencidos">Clientes vencidos: ${totalVencidos}</span><br>
         <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
     `;
 }
-
-
 
 function calcularTotalClientesVencidos() {
     const hoje = new Date();
@@ -581,8 +248,6 @@ function calcularTotalClientesVencidos() {
     return totalVencidos;
 }
 
-
-
 function calcularTotalClientesNaoVencidos() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -596,8 +261,6 @@ function calcularTotalClientesNaoVencidos() {
     });
     return totalNaoVencidos;
 }
-
-
 
 function carregarPagina() {
     const clientes = carregarClientes();
@@ -649,8 +312,6 @@ function carregarPagina() {
     atualizarInfoClientes();
 }
 
-
-
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
@@ -661,8 +322,6 @@ function toggleDarkMode() {
     const isDarkMode = body.classList.contains('dark-mode');
     localStorage.setItem('dark-mode', isDarkMode);
 }
-
-
 
 function carregarDarkMode() {
     const isDarkMode = localStorage.getItem('dark-mode') === 'true';
@@ -676,8 +335,6 @@ function carregarDarkMode() {
         footer.classList.add('footer-light'); // Garante que a classe correta seja aplicada
     }
 }
-
-
 
 function exportarClientes() {
     const clientes = carregarClientes();
@@ -693,93 +350,41 @@ function exportarClientes() {
     URL.revokeObjectURL(url);
 }
 
-
-
-/* function importar clientes */
-let clients = JSON.parse(localStorage.getItem('clients')) || [];
-        let trash = JSON.parse(localStorage.getItem('trash')) || [];
-
-        function saveClients() {
-            localStorage.setItem('clients', JSON.stringify(clients));
-        }
-
-        function saveTrash() {
-            localStorage.setItem('trash', JSON.stringify(trash));
-        }
-
-        function displayClients() {
-            const clientList = document.getElementById('clientList');
-            clientList.innerHTML = '';
-            clients.forEach((client, index) => {
-                const clientDiv = document.createElement('div');
-                clientDiv.className = 'client';
-                clientDiv.innerHTML = `
-                    <span>${client.nome} - ${client.telefone} - ${new Date(client.data).toLocaleDateString()}</span>
-                    <button onclick="deleteClient(${index})">Excluir</button>
-                `;
-                clientList.appendChild(clientDiv);
+function importarClientes(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const clientesImportados = JSON.parse(e.target.result);
+            const clientesAtuais = carregarClientes();
+            
+            // Mapa para rastrear clientes já existentes pelo nome
+            const mapaClientes = new Map();
+            clientesAtuais.forEach(cliente => {
+                mapaClientes.set(cliente.nome.toLowerCase(), cliente);
             });
-        }
 
-        function addClient() {
-            const nome = prompt('Nome do cliente:');
-            const telefone = prompt('Telefone do cliente:');
-            const data = prompt('Data (aaaa-mm-dd):');
-            clients.push({ nome, telefone, data: new Date(data).toISOString() });
-            saveClients();
-            displayClients();
-        }
+            // Atualizar clientes existentes e adicionar novos clientes do backup
+            clientesImportados.forEach(clienteImportado => {
+                const nomeClienteImportado = clienteImportado.nome.toLowerCase();
+                if (mapaClientes.has(nomeClienteImportado)) {
+                    // Cliente já existe, atualizar com informações do backup
+                    const clienteExistente = mapaClientes.get(nomeClienteImportado);
+                    clienteExistente.telefone = clienteImportado.telefone;
+                    clienteExistente.data = clienteImportado.data;
+                } else {
+                    // Novo cliente do backup, adicionar à lista
+                    clientesAtuais.push(clienteImportado);
+                }
+            });
 
-        function deleteClient(index) {
-            const client = clients.splice(index, 1)[0];
-            trash.push(client); // Move o cliente para a lixeira
-            saveClients();
-            saveTrash();
-            displayClients();
-        }
-
-
-        function importarClientes(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const clientesImportados = JSON.parse(e.target.result);
-                    const clientesAtuais = carregarClientes();
-                    
-                    // Mapa para rastrear clientes já existentes pelo nome
-                    const mapaClientes = new Map();
-                    clientesAtuais.forEach(cliente => {
-                        mapaClientes.set(cliente.nome.toLowerCase(), cliente);
-                    });
-
-                    // Atualizar clientes existentes e adicionar novos clientes do backup
-                    clientesImportados.forEach(clienteImportado => {
-                        const nomeClienteImportado = clienteImportado.nome.toLowerCase();
-                        if (mapaClientes.has(nomeClienteImportado)) {
-                            // Cliente já existe, atualizar com informações do backup
-                            const clienteExistente = mapaClientes.get(nomeClienteImportado);
-                            clienteExistente.telefone = clienteImportado.telefone;
-                            clienteExistente.data = clienteImportado.data;
-                        } else {
-                            // Novo cliente do backup, adicionar à lista
-                            clientesAtuais.push(clienteImportado);
-                        }
-                    });
-
-                    // Salvar a lista atualizada de clientes
-                    salvarClientes(clientesAtuais);
-                    window.location.reload();
-                };
-                reader.readAsText(file);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('importarClientes').addEventListener('change', importarClientes);
-            displayClients();
-        });
-
+            // Salvar a lista atualizada de clientes
+            salvarClientes(clientesAtuais);
+            window.location.reload();
+        };
+        reader.readAsText(file);
+    }
+}
 
 function backupClientes() {
     const clientes = carregarClientes();
@@ -794,8 +399,6 @@ function backupClientes() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
-
-
 
 // Função para verificar e realizar o backup diário
 function verificarBackupDiario() {
@@ -813,53 +416,37 @@ function verificarBackupDiario() {
 // Agendar a verificação de backup diário
 setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
 
-document.getElementById('select-all').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.cliente-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-});
-
-
-
-function contarClientesLixeira() {
-    const lixeira = carregarLixeira();
-    return lixeira.length;
-}
 
 
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
-    const clientes = carregarClientes();
-    const lixeira = carregarLixeira();
+    if (checkboxes.length === 0) {
+        alert('Selecione pelo menos um cliente para excluir.');
+        return;
+    }
 
-    checkboxes.forEach(checkbox => {
-        const nome = checkbox.closest('tr').getAttribute('data-nome');
-        const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+    if (confirm(`Tem certeza de que deseja excluir ${checkboxes.length} clientes?`)) {
+        let clientes = carregarClientes();
 
-        if (clienteIndex !== -1) {
-            const cliente = clientes.splice(clienteIndex, 1)[0];
-            lixeira.push(cliente);
-        }
-    });
+        checkboxes.forEach(checkbox => {
+            const linha = checkbox.closest('tr');
+            const nome = linha.cells[1].innerText;
+            clientes = clientes.filter(cliente => cliente.nome.toLowerCase() !== nome.toLowerCase());
+            linha.remove();
+        });
 
-    salvarClientes(clientes);
-    salvarLixeira(lixeira);
-    carregarLixeiraPagina();
-    atualizarTabelaClientes();
-    atualizarInfoClientes();
-    
+        salvarClientes(clientes);
+        atualizarInfoClientes();
+        window.location.reload();
+    }
 }
 
 
 
+// Verificação inicial ao carregar a página
 window.onload = function() {
-
     carregarPagina();
     carregarDarkMode();
-    verificarBackupDiario();
-    exibirClientesAlterados();
+    verificarBackupDiario(); // Verificar backup diário quando a página carrega
     
-    // Chama a função de scroll para garantir que o botão seja configurado corretamente
-    window.onscroll();
 };
