@@ -56,12 +56,15 @@ document.getElementById('backToTop').onclick = function() {
 
 
 
+
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
         carregarLixeiraPagina();
     }
 }
+
+
 
 function carregarLixeiraPagina() {
     const lixeira = carregarLixeira();
@@ -88,6 +91,10 @@ function carregarLixeiraPagina() {
     } else {
         esvaziarLixeiraButton.style.display = 'block';
     }
+
+    // Exibir quantidade de clientes na lixeira
+    const quantidadeClientes = contarClientesLixeira();
+    document.getElementById('quantidadeClientesLixeira').textContent = `Clientes na lixeira: ${quantidadeClientes}`;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -168,7 +175,10 @@ function salvarClientes(clientes) {
     localStorage.setItem('clientes', JSON.stringify(clientes));
 }
 
-
+window.addEventListener('load', function() {
+    const clientes = carregarClientes();
+    clientes.forEach(cliente => adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data));
+});
 
 function alternarLixeira() {
     const containerLixeira = document.getElementById('containerLixeira');
@@ -243,12 +253,14 @@ function toggleSelecionarTodos(source) {
 function restaurarSelecionados() {
     const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
     const lixeira = carregarLixeira();
-    const clientes = carregarClientes();
+    let clientes = carregarClientes();
 
     checkboxes.forEach(checkbox => {
         const nome = checkbox.getAttribute('data-nome');
         const clienteIndex = lixeira.findIndex(c => c.nome === nome);
-        if (clienteIndex !== -1) {
+        const clienteExistente = clientes.some(cliente => cliente.nome === nome);
+
+        if (clienteIndex !== -1 && !clienteExistente) {
             const cliente = lixeira.splice(clienteIndex, 1)[0];
             clientes.push(cliente);
         }
@@ -339,31 +351,44 @@ function adicionarLinhaTabela(nome, telefone, data) {
 
     const celulaAcoes = novaLinha.insertCell(4);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     celulaAcoes.appendChild(criarBotao("Editar", function() {
-        const novoNome = prompt("Digite o novo nome do cliente:", nome);
-        const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
+    const novoNome = prompt("Digite o novo nome do cliente:", nome);
+    const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
+    const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", celulaData.innerText);
 
-        if (novoNome && validarTelefone(novoTelefone) && novaData) {
-            const partesData = novaData.split('/');
-            if (partesData.length === 3) {
-                const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-                if (!isNaN(novaDataVencimento.getTime())) {
-                    celulaNome.innerText = novoNome;
-                    celulaTelefone.innerText = novoTelefone;
-                    celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
+    if (novoNome && validarTelefone(novoTelefone) && novaData) {
+        const partesData = novaData.split('/');
+        if (partesData.length === 3) {
+            const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+            if (!isNaN(novaDataVencimento.getTime())) {
+                celulaNome.innerText = novoNome;
+                celulaTelefone.innerText = novoTelefone;
+                celulaData.innerText = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                    editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
-                } else {
-                    alert("Data inválida. Use o formato DD/MM/AAAA.");
-                }
+                editarCliente(nome, novoNome, novoTelefone, novaDataVencimento);
             } else {
-                alert("Formato de data inválido. Use DD/MM/AAAA.");
+                alert("Data inválida. Use o formato DD/MM/AAAA.");
             }
         } else {
-            alert("Por favor, preencha todos os campos corretamente.");
+            alert("Formato de data inválido. Use DD/MM/AAAA.");
         }
-    }));
+    } else {
+        alert("Por favor, preencha todos os campos corretamente.");
+    }
+}));
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
@@ -452,28 +477,23 @@ function atualizarDataVencimento(nomeCliente, novaData) {
 
 
 
-function editarCliente(nomeCliente, novoNome, novoTelefone, novaDataVencimento) {
-    let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-    let clienteExistente = clientes.find(c => c.nome === nomeCliente);
+function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
+    let clientes = carregarClientes();
+    let clienteExistente = clientes.find(c => c.nome.toLowerCase() === nomeAntigo.toLowerCase());
 
     if (clienteExistente) {
-        let dataAnterior = new Date(clienteExistente.data).toLocaleDateString('pt-BR');
-        let novaDataFormatada = new Date(novaDataVencimento).toLocaleDateString('pt-BR');
-        
-        // Atualiza o nome e telefone se necessário
         clienteExistente.nome = novoNome;
         clienteExistente.telefone = novoTelefone;
+        clienteExistente.data = novaDataVencimento;
 
-        // Atualiza a data de vencimento e exibe alteração se necessário
-        if (dataAnterior !== novaDataFormatada) {
-            clienteExistente.data = novaDataVencimento;
-            atualizarClientesAlterados(nomeCliente);
-        }
+        salvarClientes(clientes);
+        carregarPagina();
+        atualizarInfoClientes();
+        exibirClientesAlterados();
+        atualizarTabelaClientes();
     }
-
-    localStorage.setItem('clientes', JSON.stringify(clientes));
-    window.location.reload(); // Recarrega a página para atualizar a exibição
 }
+
 
 
 
@@ -664,42 +684,97 @@ function exportarClientes() {
 
 
 
-function importarClientes(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const clientesImportados = JSON.parse(e.target.result);
-            const clientesAtuais = carregarClientes();
-            
-            // Mapa para rastrear clientes já existentes pelo nome
-            const mapaClientes = new Map();
-            clientesAtuais.forEach(cliente => {
-                mapaClientes.set(cliente.nome.toLowerCase(), cliente);
+/* function importar clientes */
+let clients = JSON.parse(localStorage.getItem('clients')) || [];
+        let trash = JSON.parse(localStorage.getItem('trash')) || [];
+
+        function saveClients() {
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
+
+        function saveTrash() {
+            localStorage.setItem('trash', JSON.stringify(trash));
+        }
+
+        function displayClients() {
+            const clientList = document.getElementById('clientList');
+            clientList.innerHTML = '';
+            clients.forEach((client, index) => {
+                const clientDiv = document.createElement('div');
+                clientDiv.className = 'client';
+                clientDiv.innerHTML = `
+                    <span>${client.nome} - ${client.telefone} - ${new Date(client.data).toLocaleDateString()}</span>
+                    <button onclick="deleteClient(${index})">Excluir</button>
+                `;
+                clientList.appendChild(clientDiv);
             });
+        }
 
-            // Atualizar clientes existentes e adicionar novos clientes do backup
-            clientesImportados.forEach(clienteImportado => {
-                const nomeClienteImportado = clienteImportado.nome.toLowerCase();
-                if (mapaClientes.has(nomeClienteImportado)) {
-                    // Cliente já existe, atualizar com informações do backup
-                    const clienteExistente = mapaClientes.get(nomeClienteImportado);
-                    clienteExistente.telefone = clienteImportado.telefone;
-                    clienteExistente.data = clienteImportado.data;
-                } else {
-                    // Novo cliente do backup, adicionar à lista
-                    clientesAtuais.push(clienteImportado);
-                }
-            });
+        function addClient() {
+            const nome = prompt('Nome do cliente:');
+            const telefone = prompt('Telefone do cliente:');
+            const data = prompt('Data (aaaa-mm-dd):');
+            clients.push({ nome, telefone, data: new Date(data).toISOString() });
+            saveClients();
+            displayClients();
+        }
 
-            // Salvar a lista atualizada de clientes
-            salvarClientes(clientesAtuais);
-            window.location.reload();
-        };
-        reader.readAsText(file);
-    }
-}
+        function deleteClient(index) {
+            const client = clients.splice(index, 1)[0];
+            trash.push(client); // Move o cliente para a lixeira
+            saveClients();
+            saveTrash();
+            displayClients();
+        }
 
+        function carregarClientes() {
+            return JSON.parse(localStorage.getItem('clients')) || [];
+        }
+
+        function salvarClientes(clientes) {
+            localStorage.setItem('clients', JSON.stringify(clientes));
+        }
+
+        function importarClientes(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const clientesImportados = JSON.parse(e.target.result);
+                    const clientesAtuais = carregarClientes();
+                    
+                    // Mapa para rastrear clientes já existentes pelo nome
+                    const mapaClientes = new Map();
+                    clientesAtuais.forEach(cliente => {
+                        mapaClientes.set(cliente.nome.toLowerCase(), cliente);
+                    });
+
+                    // Atualizar clientes existentes e adicionar novos clientes do backup
+                    clientesImportados.forEach(clienteImportado => {
+                        const nomeClienteImportado = clienteImportado.nome.toLowerCase();
+                        if (mapaClientes.has(nomeClienteImportado)) {
+                            // Cliente já existe, atualizar com informações do backup
+                            const clienteExistente = mapaClientes.get(nomeClienteImportado);
+                            clienteExistente.telefone = clienteImportado.telefone;
+                            clienteExistente.data = clienteImportado.data;
+                        } else {
+                            // Novo cliente do backup, adicionar à lista
+                            clientesAtuais.push(clienteImportado);
+                        }
+                    });
+
+                    // Salvar a lista atualizada de clientes
+                    salvarClientes(clientesAtuais);
+                    window.location.reload();
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('importarClientes').addEventListener('change', importarClientes);
+            displayClients();
+        });
 
 
 function backupClientes() {
@@ -743,6 +818,12 @@ document.getElementById('select-all').addEventListener('change', function() {
 
 
 
+function contarClientesLixeira() {
+    const lixeira = carregarLixeira();
+    return lixeira.length;
+}
+
+
 function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
     const clientes = carregarClientes();
@@ -760,10 +841,10 @@ function excluirClientesSelecionados() {
 
     salvarClientes(clientes);
     salvarLixeira(lixeira);
-
-    // Atualiza a tabela de clientes e a lixeira
-    atualizarTabelaClientes();
     carregarLixeiraPagina();
+    atualizarTabelaClientes();
+    atualizarInfoClientes();
+    carregarPagina();
 }
 
 
@@ -772,8 +853,10 @@ window.onload = function() {
 
     carregarPagina();
     carregarDarkMode();
+    verificarLogoComemorativa();
     verificarBackupDiario();
     exibirClientesAlterados();
+    
     // Chama a função de scroll para garantir que o botão seja configurado corretamente
     window.onscroll();
 };
