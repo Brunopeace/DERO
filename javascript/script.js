@@ -446,18 +446,17 @@ function atualizarClientesAlterados(nome) {
 function exibirClientesAlterados() {
     const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
     const hoje = new Date().toLocaleDateString('pt-BR');
-    const clientesHoje = clientesAlterados.find(c => c.data === hoje);
+    const clienteHoje = clientesAlterados.find(c => c.data === hoje);
     const campoClientesAlterados = document.getElementById('infoClientes');
 
-    if (clientesHoje && clientesHoje.nomes.length > 0) {
-        campoClientesAlterados.innerHTML = '<span class="titulo-clientes-renovados">Renovados hoje: </span><br><br>' + clientesHoje.nomes.join(', ');
+    if (clienteHoje && clienteHoje.nomes.length > 0) {
+        campoClientesAlterados.innerHTML = '<span class="titulo-clientes-renovados">Renovados hoje: </span><br><br>' + clienteHoje.nomes.join(', ');
     } else {
         campoClientesAlterados.innerHTML = '<span class="nenhum-cliente-renovado">Nenhum cliente renovado hoje</span>';
     }
 }
 
 window.addEventListener('load', exibirClientesAlterados);
-
 
 function atualizarDataVencimento(nomeCliente, novaData) {
     let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
@@ -477,6 +476,28 @@ function atualizarDataVencimento(nomeCliente, novaData) {
 
 
 
+
+function registrarClienteAlterado(nome, novaDataVencimento) {
+    const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    let clienteHoje = clientesAlterados.find(c => c.data === hoje);
+
+    if (!clienteHoje) {
+        clienteHoje = { data: hoje, nomes: [] };
+        clientesAlterados.push(clienteHoje);
+    }
+
+    if (!clienteHoje.nomes.includes(nome)) {
+        clienteHoje.nomes.push(nome);
+    }
+
+    localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
+}
+
+
+
+
 function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
     let clientes = carregarClientes();
     let clienteExistente = clientes.find(c => c.nome.toLowerCase() === nomeAntigo.toLowerCase());
@@ -487,7 +508,9 @@ function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
         clienteExistente.data = novaDataVencimento;
 
         salvarClientes(clientes);
-        carregarPagina();
+
+        registrarClienteAlterado(clienteExistente.nome, novaDataVencimento); // Registrar alteração
+
         atualizarInfoClientes();
         exibirClientesAlterados();
         atualizarTabelaClientes();
@@ -853,7 +876,6 @@ window.onload = function() {
 
     carregarPagina();
     carregarDarkMode();
-    verificarLogoComemorativa();
     verificarBackupDiario();
     exibirClientesAlterados();
     
