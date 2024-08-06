@@ -36,11 +36,6 @@ if ('serviceWorker' in navigator) {
 
 
 
-
-
-        
-        
-
 // Mostra o botão quando o usuário rola 20px para baixo
 window.onscroll = function() {
     const backToTopButton = document.getElementById('backToTop');
