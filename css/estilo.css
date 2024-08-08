@@ -65,6 +65,7 @@
 }
 
 
+/* infoClientes */
 
 #infoClientes {
     padding: 20px;
@@ -112,8 +113,7 @@ ul li:hover {
     background: linear-gradient(45deg, rgb(35, 74, 82), rgb(39, 214, 74));
 }
 
-
-
+/* infoClientes */
 
 
 #backToTop {
