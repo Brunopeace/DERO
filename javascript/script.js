@@ -8,11 +8,15 @@ if ('serviceWorker' in navigator) {
     });
   }
 
+
+
   let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
+
+window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // Opcional: Mostre um botão para o usuário instalar
+
+    // Criar um botão ou outro elemento na interface para o usuário instalar
     const installButton = document.createElement('button');
     installButton.innerText = 'Instalar App';
     installButton.style.position = 'fixed';
@@ -21,18 +25,27 @@ if ('serviceWorker' in navigator) {
     document.body.appendChild(installButton);
 
     installButton.addEventListener('click', () => {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Usuário aceitou instalar o app');
-        } else {
-          console.log('Usuário rejeitou instalar o app');
-        }
-        deferredPrompt = null;
-        document.body.removeChild(installButton);
-      });
+        deferredPrompt.prompt(); // Mostra o prompt de instalação
+
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Usuário aceitou instalar o app');
+            } else {
+                console.log('Usuário rejeitou instalar o app');
+            }
+            deferredPrompt = null; // Limpa o prompt armazenado
+            installButton.remove(); // Remove o botão da interface
+        });
     });
-  });
+});
+
+// Opcional: Remover o botão após um tempo se o usuário não interagir
+setTimeout(() => {
+    if (deferredPrompt && installButton) {
+        installButton.remove();
+        console.log('Botão de instalação removido por inatividade.');
+    }
+}, 15000); // Remove o botão após 15 segundos
 
 
 
@@ -50,7 +63,6 @@ window.onscroll = function() {
 document.getElementById('backToTop').onclick = function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
-
 
 
 function verificarLogoComemorativa() {
@@ -309,6 +321,7 @@ function restaurarSelecionados() {
     const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
     const lixeira = carregarLixeira();
     let clientes = carregarClientes();
+    let clientesRestaurados = false;
 
     checkboxes.forEach(checkbox => {
         const nome = checkbox.getAttribute('data-nome');
@@ -318,6 +331,7 @@ function restaurarSelecionados() {
         if (clienteIndex !== -1 && !clienteExistente) {
             const cliente = lixeira.splice(clienteIndex, 1)[0];
             clientes.push(cliente);
+            clientesRestaurados = true;
         }
     });
 
@@ -327,7 +341,26 @@ function restaurarSelecionados() {
     atualizarInfoClientes();
     atualizarTabelaClientes();
     carregarPagina();
+
+    if (clientesRestaurados) {
+        exibirFeedback("Clientes restaurados com sucesso");
+    }
 }
+
+function exibirFeedback(mensagem) {
+    let feedbackElement = document.getElementById('feedbackR');
+    if (!feedbackElement) {
+        feedbackElement = document.createElement('div');
+        feedbackElement.id = 'feedbackR';
+        document.body.appendChild(feedbackElement);
+    }
+    feedbackElement.innerText = mensagem;
+    feedbackElement.style.display = "block";  // Exibe a mensagem
+    setTimeout(() => {
+        feedbackElement.style.display = "none";  // Oculta a mensagem após 4 segundos
+    }, 4000);
+}
+
 
 
 
@@ -442,6 +475,7 @@ function adicionarLinhaTabela(nome, telefone, data) {
         }
     }
 }));
+    
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
@@ -596,6 +630,7 @@ function atualizarDataVencimento(nomeCliente, novaData) {
             clienteExistente.data = novaData;
             localStorage.setItem('clientes', JSON.stringify(clientes));
             atualizarClientesAlterados(nomeCliente, dataAnterior, novaDataFormatada);
+    
         }
     }
 }
@@ -618,6 +653,7 @@ function registrarClienteAlterado(nome) {
     }
 
     localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
+    
 }
 
 
@@ -919,7 +955,6 @@ function backupClientes() {
 }
 
 
-
 // Função para verificar e realizar o backup diário
 function verificarBackupDiario() {
     const hoje = new Date();
@@ -932,6 +967,7 @@ function verificarBackupDiario() {
         localStorage.setItem('ultimaBackup', hoje.toISOString());
     }
 }
+
 
 // Agendar a verificação de backup diário
 setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
@@ -955,6 +991,7 @@ function excluirClientesSelecionados() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox:checked');
     const clientes = carregarClientes();
     const lixeira = carregarLixeira();
+    let clientesExcluidos = false;
 
     checkboxes.forEach(checkbox => {
         const nome = checkbox.closest('tr').getAttribute('data-nome');
@@ -963,6 +1000,7 @@ function excluirClientesSelecionados() {
         if (clienteIndex !== -1) {
             const cliente = clientes.splice(clienteIndex, 1)[0];
             lixeira.push(cliente);
+            clientesExcluidos = true;  // Marca que ao menos um cliente foi excluído
         }
     });
 
@@ -972,8 +1010,16 @@ function excluirClientesSelecionados() {
     atualizarTabelaClientes();
     atualizarInfoClientes();
     carregarPagina();
-}
 
+    if (clientesExcluidos) {
+        const feedbackElement = document.getElementById('feedback');
+        feedbackElement.innerText = "Clientes excluídos com sucesso";
+        feedbackElement.style.display = "block";  // Exibe a mensagem
+        setTimeout(() => {
+            feedbackElement.style.display = "none";  // Oculta a mensagem após 3 segundos
+        }, 4000);
+    }
+}
 
 
 window.onload = function() {
