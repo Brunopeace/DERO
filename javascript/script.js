@@ -112,7 +112,7 @@ function verificarLogoComemorativa() {
         
         
     } else {
-        logo.src = './logo-padrao.png'; // logo padrao
+        logo.src = 'img/logo-padrao.png'; // logo padrao
     }
 }
 
