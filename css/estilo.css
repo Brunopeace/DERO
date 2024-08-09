@@ -1,4 +1,3 @@
-
 .calendario {
   width: 20px;
   height: auto;
@@ -30,6 +29,8 @@
   height: auto;
   margin-left: 50px;
 }
+
+
 
 #quantidadeClientesLixeira {
     display: inline-block;
@@ -99,7 +100,6 @@
 
 
 /* infoClientes */
-
 #infoClientes {
     padding: 20px;
     background: linear-gradient(45deg, rgb(0, 64, 122), rgb(99, 223, 134));
@@ -149,6 +149,38 @@ ul li:hover {
 /* infoClientes */
 
 
+#feedback {
+    color: #ffffff;
+    display: none;
+    padding: 10px 20px;
+    margin: 20px auto;
+    width: fit-content;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
+
+
+
+#feedbackR {
+    color: #ffffff;
+    display: none;
+    padding: 10px 20px;
+    margin: 20px auto;
+    width: fit-content;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #00ff00;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
+
+
+
 #backToTop {
     display: none;
     position: fixed;
@@ -170,6 +202,7 @@ ul li:hover {
     justify-content: center;
 }
 
+
 #backToTop::after {
     content: '';
     border: solid white;
@@ -179,6 +212,7 @@ ul li:hover {
     transform: rotate(-135deg);
     -webkit-transform: rotate(-135deg);
 }
+
 
 #backToTop:hover {
     background: linear-gradient(45deg, #228B22, #00FF00); 
@@ -193,83 +227,7 @@ ul li:hover {
 }
 
 
-
-
-.loading-coracao {
-  display:block;
-  position: relative;
-  width: 30px;
-  height: 30px;
-  margin:auto;
-  transform: rotate(45deg);
-  transform-origin: 40px 40px;
-  padding-left: 45px;
-  padding-bottom: 45px;
-}
-
-
-.loading-coracao span {
-  top: 32px;
-  left: 32px;
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  background: #fd0000;
-  animation: loading-coracao 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
-}
-
-
-
-.loading-coracao span:after,
-.loading-coracao span:before {
-  content: " ";
-  position: absolute;
-  display: block;
-  width: 32px;
-  height: 32px;
-  background: #fd0000;
-}
-
-
-
-.loading-coracao span:before {
-  left: -24px;
-  border-radius: 50% 0 0 50%;
-}
-
-
-
-.loading-coracao span:after {
-  top: -24px;
-  border-radius: 50% 50% 0 0;
-}
-
-
-
-@keyframes loading-coracao {
-  0% {
-    transform: scale(0.95);
-  }
-  5% {
-    transform: scale(1.1);
-  }
-  39% {
-    transform: scale(0.85);
-  }
-  45% {
-    transform: scale(1);
-  }
-  60% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(0.9);
-  }
-}
-    
-         
-         
-         
+   
 .clientes-vencidos {
         color: red;
         font-size: 16px;
