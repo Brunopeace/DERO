@@ -963,6 +963,7 @@ window.onload = function() {
     carregarDarkMode();
     verificarBackupDiario();
     exibirClientesAlterados();
+    verificarLogoComemorativa();
     
     
     // Chama a função de scroll para garantir que o botão seja configurado corretamente
