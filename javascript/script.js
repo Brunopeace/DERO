@@ -8,7 +8,8 @@ if ('serviceWorker' in navigator) {
     });
   }
 
-  /* código para instalar o aplicativo */
+
+/* código para instalar o aplicativo */
 
   let deferredPrompt;
 
@@ -63,7 +64,6 @@ window.onscroll = function() {
 document.getElementById('backToTop').onclick = function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
-
 
 function verificarLogoComemorativa() {
     const logo = document.getElementById('logo');
@@ -128,17 +128,12 @@ function verificarLogoComemorativa() {
     }
 }
 
-
-
-
 function esvaziarLixeira() {
     if (confirm("Tem certeza de que deseja esvaziar a lixeira? Isso removerá permanentemente todos os clientes nela.")) {
         localStorage.removeItem('lixeira');
         carregarLixeiraPagina();
     }
 }
-
-
 
 function carregarLixeiraPagina() {
     const lixeira = carregarLixeira();
@@ -180,7 +175,6 @@ function removerPermanentemente(nome) {
     }
 }
 
-
 function removerPermanentemente(nome) {
     const lixeira = carregarLixeira();
     const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
@@ -204,7 +198,6 @@ function salvarLixeira(lixeira) {
 
 window.addEventListener('load', carregarLixeiraPagina);
 
-
 function restaurarCliente(nome) {
     const lixeira = carregarLixeira();
     const clientes = carregarClientes();
@@ -219,9 +212,9 @@ function restaurarCliente(nome) {
         carregarLixeiraPagina();
         atualizarInfoClientes();
         atualizarTabelaClientes();
+        window.location.reload();
     }
 }
-
 
 function atualizarTabelaClientes() {
     const clientes = carregarClientes();
@@ -232,7 +225,6 @@ function atualizarTabelaClientes() {
         adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data);
     });
 }
-
 
 function carregarClientes() {
     return JSON.parse(localStorage.getItem('clientes')) || [];
@@ -261,7 +253,6 @@ toggleButton.textContent = 'Abrir Lixeira';
 }
 }
 
-
 function excluirCliente(nome) {
     const clientes = carregarClientes();
     const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
@@ -286,8 +277,6 @@ function excluirCliente(nome) {
     }
 }
 
-
-
 function pesquisarClientesLixeira() {
     const input = document.getElementById('pesquisarLixeira');
     const filter = input.value.toLowerCase();
@@ -302,15 +291,12 @@ function pesquisarClientesLixeira() {
     });
 }
 
-
 function toggleSelecionarTodos(source) {
     const checkboxes = document.querySelectorAll('.checkboxCliente');
     checkboxes.forEach(checkbox => {
         checkbox.checked = source.checked;
     });
 }
-
-
 
 function restaurarSelecionados() {
     const checkboxes = document.querySelectorAll('.checkboxCliente:checked');
@@ -356,7 +342,6 @@ function exibirFeedback(mensagem) {
     }, 4000);
 }
 
-
 function adicionarCliente() {
     const nome = document.getElementById('inputNome').value.trim();
     const telefone = document.getElementById('inputTelefone').value.trim();
@@ -381,11 +366,9 @@ function adicionarCliente() {
     }
 }
 
-
 function validarTelefone(telefone) {
     return telefone.length === 11 && /^\d+$/.test(telefone);
 }
-
 
 function calcularDataVencimento(data) {
     let dia = data.getDate() + 1;
@@ -405,7 +388,6 @@ function calcularDataVencimento(data) {
 
     return dataVencimento;
 }
-
 
 function adicionarLinhaTabela(nome, telefone, data) {
     const tabela = document.getElementById('corpoTabela');
@@ -525,8 +507,6 @@ function atualizarCorCelulaData(celulaData, dataVencimento) {
     }
 }
 
-
-
 function renovarCliente(nomeCliente) {
     const clientes = carregarClientes();
     const clienteExistente = clientes.find(c => c.nome === nomeCliente);
@@ -546,8 +526,6 @@ function renovarCliente(nomeCliente) {
         exibirClientesRenovadosHoje();
     }
 }
-
-
 
 function registrarClienteRenovadoHoje(nomeCliente) {
     const hoje = new Date().toLocaleDateString('pt-BR');
@@ -580,10 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
     exibirClientesRenovadosHoje();
 });
 
-
-
-
-
 // Função para atualizar a lista de clientes alterados no localStorage
 function atualizarClientesAlterados(nome, dataAnterior, novaData) {
 const hoje = new Date().toLocaleDateString('pt-BR');
@@ -599,8 +573,6 @@ clientesHoje.nomes.push({ nome: nome, dataAnterior: dataAnterior, novaData: nova
 localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
 exibirClientesAlterados();
 }
-
-
 
 // Função para exibir a lista de clientes alterados na interface
 function exibirClientesAlterados() {
@@ -621,8 +593,6 @@ document.addEventListener('DOMContentLoaded', () => {
     exibirClientesAlterados();
 });
 
-
-
 function atualizarDataVencimento(nomeCliente, novaData) {
     let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
     let clienteExistente = clientes.find(c => c.nome === nomeCliente);
@@ -639,8 +609,6 @@ function atualizarDataVencimento(nomeCliente, novaData) {
         }
     }
 }
-
-
 
 function registrarClienteAlterado(nome) {
     const clientesAlterados = JSON.parse(localStorage.getItem('clientesAlterados')) || [];
@@ -660,8 +628,6 @@ function registrarClienteAlterado(nome) {
     localStorage.setItem('clientesAlterados', JSON.stringify(clientesAlterados));
     
 }
-
-
 
 function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
             let clientes = carregarClientes();
@@ -686,8 +652,6 @@ function editarCliente(nomeAntigo, novoNome, novoTelefone, novaDataVencimento) {
             exibirClientesAlterados();
         });
 
-
-
 function criarBotao(texto, callback) {
     const btn = document.createElement("button");
     btn.innerText = texto;
@@ -695,15 +659,9 @@ function criarBotao(texto, callback) {
     return btn;
 }
 
-
-
 function abrirWhatsApp(telefoneCliente, mensagem) {
     window.open(`https://api.whatsapp.com/send?phone=55${telefoneCliente}&text=${mensagem}`, '_blank');
 }
-
-
-
-
 
 function pesquisarCliente() {
     const termoPesquisa = document.getElementById('inputPesquisar').value.toLowerCase();
@@ -719,8 +677,6 @@ function pesquisarCliente() {
     }
 }
 
-
-
 function atualizarInfoClientes() {
     const totalVencidos = calcularTotalClientesVencidos();
     const totalNaoVencidos = calcularTotalClientesNaoVencidos();
@@ -729,8 +685,6 @@ function atualizarInfoClientes() {
         <span class="clientes-ativos">Clientes ativos: ${totalNaoVencidos}</span>
     `;
 }
-
-
 
 function calcularTotalClientesVencidos() {
     const hoje = new Date();
@@ -745,8 +699,6 @@ function calcularTotalClientesVencidos() {
     return totalVencidos;
 }
 
-
-
 function calcularTotalClientesNaoVencidos() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -760,8 +712,6 @@ function calcularTotalClientesNaoVencidos() {
     });
     return totalNaoVencidos;
 }
-
-
 
 function carregarPagina() {
     const clientes = carregarClientes();
@@ -813,8 +763,6 @@ function carregarPagina() {
     atualizarInfoClientes();
 }
 
-
-
 function toggleDarkMode() {
     const body = document.body;
     body.classList.toggle('dark-mode');
@@ -859,84 +807,114 @@ function exportarClientes() {
 
 
 function importarClientes(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const clientesImportados = JSON.parse(e.target.result);
-                    const clientesAtuais = carregarClientes();
-                    
-                    // Mapa para rastrear clientes já existentes pelo nome
-                    const mapaClientes = new Map();
-                    clientesAtuais.forEach(cliente => {
-                        mapaClientes.set(cliente.nome.toLowerCase(), cliente);
-                    });
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const clientesImportados = JSON.parse(e.target.result);
+            const clientesAtuais = carregarClientes();
+            
+            // Mapa para rastrear clientes já existentes pelo nome
+            const mapaClientes = new Map();
+            clientesAtuais.forEach(cliente => {
+                mapaClientes.set(cliente.nome.toLowerCase(), cliente);
+            });
 
-                    // Atualizar clientes existentes e adicionar novos clientes do backup
-                    clientesImportados.forEach(clienteImportado => {
-                        const nomeClienteImportado = clienteImportado.nome.toLowerCase();
-                        if (mapaClientes.has(nomeClienteImportado)) {
-                            // Cliente já existe, atualizar com informações do backup
-                            const clienteExistente = mapaClientes.get(nomeClienteImportado);
-                            clienteExistente.telefone = clienteImportado.telefone;
-                            clienteExistente.data = clienteImportado.data;
-                        } else {
-                            // Novo cliente do backup, adicionar à lista
-                            clientesAtuais.push(clienteImportado);
-                        }
-                    });
+            // Atualizar clientes existentes e adicionar novos clientes do backup
+            clientesImportados.forEach(clienteImportado => {
+                const nomeClienteImportado = clienteImportado.nome.toLowerCase();
+                if (mapaClientes.has(nomeClienteImportado)) {
+                    // Cliente já existe, atualizar com informações do backup
+                    const clienteExistente = mapaClientes.get(nomeClienteImportado);
+                    clienteExistente.telefone = clienteImportado.telefone;
+                    clienteExistente.data = clienteImportado.data;
+                } else {
+                    // Novo cliente do backup, adicionar à lista
+                    clientesAtuais.push(clienteImportado);
+                }
+            });
 
-                    // Salvar a lista atualizada de clientes
-                    salvarClientes(clientesAtuais);
-                    window.location.reload();
-                };
-                reader.readAsText(file);
-            }
-        }
+            // Salvar a lista atualizada de clientes
+            salvarClientes(clientesAtuais);
+            window.location.reload();
+        };
+        reader.readAsText(file);
+    }
+}
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('importarClientes').addEventListener('change', importarClientes);
-            displayClients();
-        });
-
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('importarClientes').addEventListener('change', importarClientes);
+    
+    if (typeof displayClients === 'function') {
+        displayClients(); // Verifica se a função displayClients existe antes de chamá-la
+    }
+});
 
 function backupClientes() {
+    // Carrega os clientes do localStorage
     const clientes = carregarClientes();
-    const blob = new Blob([JSON.stringify(clientes)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    // Carrega a lixeira do localStorage
+    const lixeira = carregarLixeira();
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'clientes_backup.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Cria um objeto para armazenar o backup
+    const backup = {
+        clientes: clientes,
+        lixeira: lixeira
+    };
+
+    // Converte o objeto de backup para uma string JSON
+    const backupJSON = JSON.stringify(backup);
+
+    // Cria um blob a partir da string JSON
+    const blob = new Blob([backupJSON], { type: 'application/json' });
+
+    // Cria um link temporário para fazer o download do backup
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_clientes_${new Date().toLocaleDateString('pt-BR')}.json`;
+    link.click();
 }
 
 
 // Função para verificar e realizar o backup diário
 function verificarBackupDiario() {
-    const hoje = new Date();
-    const ultimaBackupStr = localStorage.getItem('ultimaBackup');
-    const ultimaBackup = ultimaBackupStr ? new Date(ultimaBackupStr) : null;
+    const ultimoBackup = localStorage.getItem('ultimoBackup');
+    const hoje = new Date().toLocaleDateString('pt-BR');
 
-    // Se não houve backup antes ou se um dia passou desde o último backup
-    if (!ultimaBackup || (hoje.getTime() - ultimaBackup.getTime()) >= 24 * 60 * 60 * 1000) {
+    if (ultimoBackup !== hoje) {
+        // Chama a função de backup que agora inclui a lixeira
         backupClientes();
-        localStorage.setItem('ultimaBackup', hoje.toISOString());
+        localStorage.setItem('ultimoBackup', hoje);
+        console.log('Backup diário realizado com sucesso.');
+    } else {
+        console.log('O backup diário já foi realizado hoje.');
     }
 }
 
-// Agendar a verificação de backup diário
-setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
+function backupClientes() {
+    // Carrega os clientes do localStorage
+    const clientes = carregarClientes();
+    // Carrega a lixeira do localStorage
+    const lixeira = carregarLixeira();
 
-document.getElementById('select-all').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.cliente-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-});
+    // Cria um objeto para armazenar o backup
+    const backup = {
+        clientes: clientes,
+        lixeira: lixeira
+    };
+
+    // Converte o objeto de backup para uma string JSON
+    const backupJSON = JSON.stringify(backup);
+
+    // Cria um blob a partir da string JSON
+    const blob = new Blob([backupJSON], { type: 'application/json' });
+
+    // Cria um link temporário para fazer o download do backup
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `backup_clientes_${new Date().toLocaleDateString('pt-BR')}.json`;
+    link.click();
+}
 
 function contarClientesLixeira() {
 const lixeira = carregarLixeira();
@@ -985,7 +963,6 @@ window.onload = function() {
     carregarDarkMode();
     verificarBackupDiario();
     exibirClientesAlterados();
-    verificarLogoComemorativa();
     
     
     // Chama a função de scroll para garantir que o botão seja configurado corretamente
