@@ -8,7 +8,7 @@ if ('serviceWorker' in navigator) {
     });
   }
 
-
+  /* código para instalar o aplicativo */
 
   let deferredPrompt;
 
@@ -181,8 +181,6 @@ function removerPermanentemente(nome) {
 }
 
 
-
-
 function removerPermanentemente(nome) {
     const lixeira = carregarLixeira();
     const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
@@ -225,7 +223,6 @@ function restaurarCliente(nome) {
 }
 
 
-
 function atualizarTabelaClientes() {
     const clientes = carregarClientes();
     const tabela = document.getElementById('corpoTabela');
@@ -235,7 +232,6 @@ function atualizarTabelaClientes() {
         adicionarLinhaTabela(cliente.nome, cliente.telefone, cliente.data);
     });
 }
-
 
 
 function carregarClientes() {
@@ -264,7 +260,6 @@ containerLixeira.style.display = 'none';
 toggleButton.textContent = 'Abrir Lixeira';
 }
 }
-
 
 
 function excluirCliente(nome) {
@@ -362,8 +357,6 @@ function exibirFeedback(mensagem) {
 }
 
 
-
-
 function adicionarCliente() {
     const nome = document.getElementById('inputNome').value.trim();
     const telefone = document.getElementById('inputTelefone').value.trim();
@@ -389,11 +382,9 @@ function adicionarCliente() {
 }
 
 
-
 function validarTelefone(telefone) {
     return telefone.length === 11 && /^\d+$/.test(telefone);
 }
-
 
 
 function calcularDataVencimento(data) {
@@ -440,53 +431,67 @@ function adicionarLinhaTabela(nome, telefone, data) {
     const celulaAcoes = novaLinha.insertCell(4);
 
     celulaAcoes.appendChild(criarBotao("Editar", function() {
-    const novoNome = prompt("Digite o novo nome do cliente:", nome);
-    const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
-    const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", new Date(data).toLocaleDateString('pt-BR'));
+        const novoNome = prompt("Digite o novo nome do cliente:", nome);
+        const novoTelefone = prompt("Digite o novo telefone do cliente:", telefone);
+        const novaData = prompt("Digite a nova data de vencimento (DD/MM/AAAA):", new Date(data).toLocaleDateString('pt-BR'));
 
-    // Verifica se o usuário não cancelou algum dos prompts
-    if (novoNome !== null && novoTelefone !== null && novaData !== null && novoNome && validarTelefone(novoTelefone)) {
-        const partesData = novaData.split('/');
-        if (partesData.length === 3) {
-            const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
-            if (!isNaN(novaDataVencimento.getTime())) {
-                const dataAnterior = new Date(data).toLocaleDateString('pt-BR');
-                const novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
+        // Verifica se o usuário não cancelou algum dos prompts
+        if (novoNome !== null && novoTelefone !== null && novaData !== null && novoNome && validarTelefone(novoTelefone)) {
+            const partesData = novaData.split('/');
+            if (partesData.length === 3) {
+                const novaDataVencimento = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+                if (!isNaN(novaDataVencimento.getTime())) {
+                    const dataAnterior = new Date(data).toLocaleDateString('pt-BR');
+                    const novaDataFormatada = novaDataVencimento.toLocaleDateString('pt-BR');
 
-                if (dataAnterior !== novaDataFormatada) {
-                    atualizarClientesAlterados(nome, dataAnterior, novaDataFormatada);
-                }
+                    if (dataAnterior !== novaDataFormatada) {
+                        atualizarClientesAlterados(nome, dataAnterior, novaDataFormatada);
+                    }
 
-                celulaNome.innerText = novoNome;
-                celulaTelefone.innerText = novoTelefone;
-                celulaData.innerText = novaDataFormatada;
+                    celulaNome.innerText = novoNome;
+                    celulaTelefone.innerText = novoTelefone;
+                    celulaData.innerText = novaDataFormatada;
 
-                const clientes = carregarClientes();
-                const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-                if (clienteIndex !== -1) {
-                    clientes[clienteIndex].nome = novoNome;
-                    clientes[clienteIndex].telefone = novoTelefone;
-                    clientes[clienteIndex].data = novaDataVencimento;
-                    salvarClientes(clientes);
-                    atualizarCorCelulaData(celulaData, novaDataVencimento);
-                    location.reload();
+                    const clientes = carregarClientes();
+                    const clienteIndex = clientes.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
+                    if (clienteIndex !== -1) {
+                        clientes[clienteIndex].nome = novoNome;
+                        clientes[clienteIndex].telefone = novoTelefone;
+                        clientes[clienteIndex].data = novaDataVencimento;
+                        salvarClientes(clientes);
+                        atualizarCorCelulaData(celulaData, novaDataVencimento);
+                        location.reload();
+                    }
                 }
             }
         }
-    }
-}));
-    
+    }));
 
     celulaAcoes.appendChild(criarBotao("Excluir", function() {
         if (confirm("Tem certeza de que deseja excluir este cliente?")) {
             excluirCliente(nome);
         }
     }));
-
+    
     celulaAcoes.appendChild(criarBotao("WhatsApp", function() {
         const dataVencimentoDestacada = `\`${celulaData.innerText}\``;
+
+        // Obter a hora atual
+        const horaAtual = new Date().getHours();
+        let saudacao;
+
+        // Determinar a saudação com base na hora atual
+        if (horaAtual >= 0 && horaAtual < 12) {
+            saudacao = "bom dia";
+        } else if (horaAtual >= 12 && horaAtual < 18) {
+            saudacao = "boa tarde";
+        } else {
+            saudacao = "boa noite";
+        }
+
+        // Construir a mensagem com a saudação correta
         const mensagem = encodeURIComponent(
-            `*Olá bom dia, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CPF* \n \n 05222280462 `
+            `*Olá ${saudacao}, seu plano de canais está vencendo, com data de vencimento dia ${dataVencimentoDestacada}. Caso queira renovar após esta data, favor entrar em contato.* \n \n *PIX CPF* \n \n 05222280462 `
         );
         const telefoneCliente = telefone.replace(/\D/g, '');
         abrirWhatsApp(telefoneCliente, mensagem);
@@ -853,52 +858,7 @@ function exportarClientes() {
 }
 
 
-
-/* function importar clientes */
-let clients = JSON.parse(localStorage.getItem('clients')) || [];
-        let trash = JSON.parse(localStorage.getItem('trash')) || [];
-
-        function saveClients() {
-            localStorage.setItem('clients', JSON.stringify(clients));
-        }
-
-        function saveTrash() {
-            localStorage.setItem('trash', JSON.stringify(trash));
-        }
-
-        function displayClients() {
-            const clientList = document.getElementById('clientList');
-            clientList.innerHTML = '';
-            clients.forEach((client, index) => {
-                const clientDiv = document.createElement('div');
-                clientDiv.className = 'client';
-                clientDiv.innerHTML = `
-                    <span>${client.nome} - ${client.telefone} - ${new Date(client.data).toLocaleDateString()}</span>
-                    <button onclick="deleteClient(${index})">Excluir</button>
-                `;
-                clientList.appendChild(clientDiv);
-            });
-        }
-
-        function addClient() {
-            const nome = prompt('Nome do cliente:');
-            const telefone = prompt('Telefone do cliente:');
-            const data = prompt('Data (aaaa-mm-dd):');
-            clients.push({ nome, telefone, data: new Date(data).toISOString() });
-            saveClients();
-            displayClients();
-        }
-
-        function deleteClient(index) {
-            const client = clients.splice(index, 1)[0];
-            trash.push(client); // Move o cliente para a lixeira
-            saveClients();
-            saveTrash();
-            displayClients();
-        }
-
-
-        function importarClientes(event) {
+function importarClientes(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
