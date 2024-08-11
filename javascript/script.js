@@ -978,8 +978,6 @@ document.getElementById('select-all').addEventListener('change', function() {
     });
 });
 
-
-
 function contarClientesLixeira() {
 const lixeira = carregarLixeira();
 return lixeira.length;
