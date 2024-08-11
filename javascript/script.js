@@ -968,7 +968,6 @@ function verificarBackupDiario() {
     }
 }
 
-
 // Agendar a verificação de backup diário
 setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
 
