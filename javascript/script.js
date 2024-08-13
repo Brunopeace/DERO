@@ -65,6 +65,7 @@ document.getElementById('backToTop').onclick = function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+
 function verificarLogoComemorativa() {
     const logo = document.getElementById('logo');
     const hoje = new Date();
@@ -870,6 +871,9 @@ function backupClientes() {
     // Converte o objeto de backup para uma string JSON
     const backupJSON = JSON.stringify(backup);
 
+    // Salva o JSON no localStorage
+    localStorage.setItem('backupDiario', backupJSON);
+
     // Cria um blob a partir da string JSON
     const blob = new Blob([backupJSON], { type: 'application/json' });
 
@@ -879,6 +883,17 @@ function backupClientes() {
     link.download = `backup_clientes_${new Date().toLocaleDateString('pt-BR')}.json`;
     link.click();
 }
+
+// Agendar a verificação de backup diário
+setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
+
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.cliente-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
 
 // Função para verificar e realizar o backup diário
 
@@ -894,15 +909,14 @@ function verificarBackupDiario() {
     }
 }
 
-// Agendar a verificação de backup diário
-setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
-
 document.getElementById('select-all').addEventListener('change', function() {
     const checkboxes = document.querySelectorAll('.cliente-checkbox');
     checkboxes.forEach(checkbox => {
         checkbox.checked = this.checked;
     });
 });
+
+
 
 function contarClientesLixeira() {
 const lixeira = carregarLixeira();
