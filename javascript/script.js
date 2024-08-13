@@ -895,28 +895,6 @@ function verificarBackupDiario() {
     }
 }
 
-function verificarBackupDiario() {
-    const hoje = new Date();
-    const ultimaBackupStr = localStorage.getItem('ultimaBackup');
-    const ultimaBackup = ultimaBackupStr ? new Date(ultimaBackupStr) : null;
-
-    // Se não houve backup antes ou se um dia passou desde o último backup
-    if (!ultimaBackup || (hoje.getTime() - ultimaBackup.getTime()) >= 24 * 60 * 60 * 1000) {
-        backupClientes();
-        localStorage.setItem('ultimaBackup', hoje.toISOString());
-    }
-}
-
-// Agendar a verificação de backup diário
-setInterval(verificarBackupDiario, 60 * 60 * 1000); // Verifica a cada hora
-
-document.getElementById('select-all').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.cliente-checkbox');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = this.checked;
-    });
-});
-
 function contarClientesLixeira() {
 const lixeira = carregarLixeira();
 return lixeira.length;
