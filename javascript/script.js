@@ -48,7 +48,13 @@ setTimeout(() => {
     }
 }, 15000); // Remove o botão após 15 segundos
 
-
+document.addEventListener("DOMContentLoaded", () => {
+    // Esconde o loader após 2 segundos
+    setTimeout(() => {
+        const loading = document.getElementById("loading");
+        loading.style.display = "none";
+    }, 3000);
+});
 
 // Mostra o botão quando o usuário rola 20px para baixo
 window.onscroll = function() {
