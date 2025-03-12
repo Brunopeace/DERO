@@ -1,3 +1,16 @@
+.input-erro {
+    border: 2px solid red;
+    background-color: #ffe6e6;
+}
+
+.erro-mensagem {
+    color: red;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 4px;
+    display: block;
+}
+
 .calendario {
   width: 20px;
   height: auto;
