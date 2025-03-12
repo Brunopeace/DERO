@@ -305,31 +305,124 @@ function exibirFeedback(mensagem) {
 }
 
 function adicionarCliente() {
-    const nome = document.getElementById('inputNome').value.trim();
-    const telefone = document.getElementById('inputTelefone').value.trim();
-    const data = new Date(document.getElementById('inputData').value);
+    const nomeInput = document.getElementById('inputNome');
+    const telefoneInput = document.getElementById('inputTelefone');
+    const dataInput = document.getElementById('inputData');
 
-    if (nome && validarTelefone(telefone) && !isNaN(data.getTime())) {
-        const clientes = carregarClientes();
-        const clienteExistente = clientes.some(cliente => cliente.nome.toLowerCase() === nome.toLowerCase());
+    const nome = nomeInput.value.trim();
+    const telefone = telefoneInput.value.trim();
+    const data = dataInput.value;
 
-        if (clienteExistente) {
-            alert("Cliente com o mesmo nome já existe.");
-            return;
-        }
+    let erro = false;
 
-        const dataVencimento = calcularDataVencimento(data);
-        clientes.push({ nome: nome, telefone: telefone, data: dataVencimento });
-        salvarClientes(clientes);
-
-        window.location.reload();
+    // Verifica o nome
+    if (!nome) {
+        exibirErro(nomeInput, "Nome inválido. Preencha corretamente.");
+        erro = true;
     } else {
-        alert("Por favor, preencha o nome, telefone válido e a data.");
+        limparErro(nomeInput);
     }
+
+    // Verifica o telefone
+    if (!validarTelefone(telefone)) {
+        exibirErro(telefoneInput, "Telefone inválido. Deve conter 11 dígitos.");
+        erro = true;
+    } else {
+        limparErro(telefoneInput);
+    }
+
+    // Verifica a data
+    const dataFormatada = new Date(data);
+    if (!data || isNaN(dataFormatada.getTime())) {
+        exibirErro(dataInput, "Data inválida. Escolha uma data válida.");
+        erro = true;
+    } else {
+        limparErro(dataInput);
+    }
+
+    if (erro) return; // Se houver erro, para a execução
+
+    const clientes = carregarClientes();
+
+    // 🔹 verifica se o nome já existe, permitindo números repetidos
+const clienteExistente = clientes.some(cliente => 
+cliente.nome.toLowerCase() === nome.toLowerCase()
+    );
+
+    if (clienteExistente) {
+        alert("Cliente com o mesmo nome já existe.");
+        return;
+    }
+
+    const dataVencimento = calcularDataVencimento(dataFormatada);
+    clientes.push({ nome, telefone, data: dataVencimento });
+    salvarClientes(clientes);
+
+    window.location.reload();
+}
+// Função para validar telefone corretamente
+function validarTelefone(telefone) {
+    const numeroLimpo = telefone.replace(/\D/g, ''); // Remove tudo que não for número
+
+    if (numeroLimpo.length !== 11) return false; // Deve ter exatamente 11 dígitos
+
+    const ddd = numeroLimpo.substring(0, 2); // Captura os dois primeiros dígitos (DDD)
+    const primeiroDigito = numeroLimpo[2]; // Primeiro dígito do número
+
+    // Lista de DDDs válidos no Brasil
+    const dddsValidos = [
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", // SP
+        "21", "22", "24", // RJ
+        "27", "28", // ES
+        "31", "32", "33", "34", "35", "37", "38", // MG
+        "41", "42", "43", "44", "45", "46", // PR
+        "47", "48", "49", // SC
+        "51", "53", "54", "55", // RS
+        "61", // DF
+        "62", "64", // GO
+        "63", // TO
+        "65", "66", // MT
+        "67", // MS
+        "68", "69", // AC e RO
+        "71", "73", "74", "75", "77", // BA
+        "79", // SE
+        "81", "82", "83", "84", "85", "86", "87", "88", "89", // Nordeste (inclui 81 PE)
+        "91", "92", "93", "94", "95", "96", "97", "98", "99" // Norte
+    ];
+
+    return dddsValidos.includes(ddd) && primeiroDigito === '9'; // Celulares no Brasil sempre começam com 9
 }
 
-function validarTelefone(telefone) {
-    return telefone.length === 11 && /^\d+$/.test(telefone);
+// Função para formatar celular com o codigo do país +55)
+function formatarTelefone(telefone) {
+    const numeroLimpo = telefone.replace(/\D/g, '');
+
+    if (!validarTelefone(numeroLimpo)) return "Número inválido";
+
+    return `+55${numeroLimpo}`;
+}
+
+// Função para exibir erro no input
+function exibirErro(input, mensagem) {
+    let erroSpan = input.nextElementSibling;
+
+    if (!erroSpan || !erroSpan.classList.contains("erro-mensagem")) {
+        erroSpan = document.createElement("span");
+        erroSpan.classList.add("erro-mensagem");
+        input.parentNode.appendChild(erroSpan);
+    }
+    
+    erroSpan.textContent = mensagem;
+    input.classList.add("input-erro");
+}
+
+// Função para limpar o erro do input
+function limparErro(input) {
+    const erroSpan = input.nextElementSibling;
+    if (erroSpan && erroSpan.classList.contains("erro-mensagem")) {
+        erroSpan.remove();
+    }
+    input.classList.remove("input-erro");
 }
 
 function calcularDataVencimento(data) {
