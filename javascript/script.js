@@ -317,7 +317,7 @@ function adicionarCliente() {
 
     // Verifica o nome
     if (!nome) {
-        exibirErro(nomeInput, "Nome inválido. Preencha corretamente.");
+        exibirErro(nomeInput, "Nome do cliente não pode estar vazio.");
         erro = true;
     } else {
         limparErro(nomeInput);
