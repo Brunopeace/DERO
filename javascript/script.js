@@ -548,17 +548,20 @@ function criarBotao(texto, acao) {
 
 function atualizarCorCelulaData(celulaData, dataVencimento) {
     const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
+    hoje.setHours(0, 0, 0, 0); // Zera a hora para comparar só a data
 
     const diferencaDias = Math.ceil((dataVencimento - hoje) / (1000 * 60 * 60 * 24));
 
+    // Remove classes existentes
     celulaData.classList.remove('red', 'yellow', 'orange');
+
+    // Aplica a cor dependendo da diferença de dias
     if (diferencaDias < 0) {
-        celulaData.classList.add('red');
+        celulaData.classList.add('red'); // Já venceu
     } else if (diferencaDias === 0) {
-        celulaData.classList.add('yellow');
-    } else if (diferencaDias === 2) {
-        celulaData.classList.add('orange');
+        celulaData.classList.add('yellow'); // Vence hoje
+    } else if (diferencaDias <= 2) {
+        celulaData.classList.add('orange'); // Vence em até 2 dias
     }
 }
 
