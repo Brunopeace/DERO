@@ -127,17 +127,6 @@ function removerPermanentemente(nome) {
     if (clienteIndex !== -1) {
         lixeira.splice(clienteIndex, 1);
         salvarLixeira(lixeira);
-        carregarLixeiraPagina();
-    }
-}
-
-function removerPermanentemente(nome) {
-    const lixeira = carregarLixeira();
-    const clienteIndex = lixeira.findIndex(c => c.nome.toLowerCase() === nome.toLowerCase());
-
-    if (clienteIndex !== -1) {
-        lixeira.splice(clienteIndex, 1);
-        salvarLixeira(lixeira);
 
         window.location.reload();
     }
@@ -972,7 +961,6 @@ document.getElementById('select-all').addEventListener('change', function() {
         checkbox.checked = this.checked;
     });
 });
-
 
 
 function contarClientesLixeira() {
