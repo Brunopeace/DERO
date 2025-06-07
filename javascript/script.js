@@ -734,8 +734,10 @@ function pesquisarCliente() {
     const linhas = document.getElementById('corpoTabela').getElementsByTagName('tr');
 
     for (let i = 0; i < linhas.length; i++) {
-        const nome = linhas[i].getElementsByTagName('td')[1].innerText.toLowerCase(); // Mudança do índice de 0 para 1
-        if (nome.includes(termoPesquisa)) {
+        const nome = linhas[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+        const telefone = linhas[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+
+        if (nome.includes(termoPesquisa) || telefone.includes(termoPesquisa)) {
             linhas[i].style.display = '';
         } else {
             linhas[i].style.display = 'none';
